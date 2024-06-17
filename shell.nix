@@ -2,5 +2,5 @@
 }:
 
 pkgs.rstudioWrapper.override {
-  packages = with pkgs.rPackages; [ magick tesseract dplyr pander ];
+  packages = with pkgs.rPackages; [ magick tesseract dplyr pander purrr ];
 }

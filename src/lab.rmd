@@ -53,6 +53,7 @@ library(tesseract)
 library(knitr)
 library(dplyr)
 library(pander)
+library(purrr)
 
 get_sample_pic <- function(path) {
   image <- image_read(path)
@@ -86,28 +87,48 @@ get_number <- function(image) {
 ```
 
 ```{r}
-samples <- data.frame(
-  sample_image=c(),
-  number_image=c(),
-  number=c()
-)
-
 files <- list.files("pictures/pre", full.names = TRUE)
-for (file in files) {
-  print(file)
-  sample_pic = get_sample_pic(file)
-  image_write(sample_pic, path="sample.png", format="png" )
-  
-  number_pic = get_number_pic(file)
-  image_write(number_pic, path="number.png", format="png" )
-  
-  number = get_number(number_pic)
-  table_sample = "sample.png" %>% pander::pandoc.image.return()
-  table_number = "number.png" %>% pander::pandoc.image.return()
-  samples <- rbind(samples, c(table_sample, table_number, number))
+
+tmp_path <- function(prefix, path, extension) {
+  path <- basename(path)
+  path <- gsub("[^/.]*$", extension, path)
+  path <- paste(prefix, path, sep="_")
+  return(paste("tmp", path, sep="/"))
 }
 
-colnames(samples) <- c("Sample", "Number", "OCR")
+process_file <- function(file) {
+  sample_path = tmp_path("sample", file, "png")
+  if (!file.exists(sample_path)) {
+    sample_pic = get_sample_pic(file)
+    image_write(sample_pic, path=sample_path, format="png" )
+  }
+  
+  number_path = tmp_path("number", file, "png")
+  if (file.exists(number_path)) {
+    number_pic <- image_read(number_path)
+  } else {
+    number_pic = get_number_pic(file)
+    image_write(number_pic, path=number_path, format="png" )
+  }
+  
+  number = get_number(number_pic)
+  table_sample = sample_path %>% pander::pandoc.image.return()
+  table_number = number_path %>% pander::pandoc.image.return()
+    
+  df <- data.frame(
+    table_sample,
+    table_number,
+    number,
+    basename(file)
+  )
+  
+  return(df)
+}
+
+
+samples <- map_dfr(files, process_file)
+colnames(samples) <- c("Sample", "Number", "OCR", "Filename")
+
 
 samples %>% pander()
 
