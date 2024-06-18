@@ -45,22 +45,25 @@ Workaround for R 4.3.3
 #### Image Tests
 
 ```{r options, echo=FALSE, results='hide', message=FALSE}
-cache_images <- TRUE
-cache_histograms <- FALSE && cache_images
+cache_images <- FALSE
+cache_histograms <- TRUE && cache_images
+
+# open picture in GIMP, select area, use position and size values
+# (take screenshot of this)
+sample_geometry <- "662x746+1564+1822"
+number_geometry <- "243x1674+3372+1413"
+
+# adjust light cutoff for rendering numbers as black and white
+number_threshold <- "85%"
 ```
 
 ```{r imports, echo=FALSE, results='hide', message=FALSE}
-# setwd("pictures/pre")
-# knitr::include_graphics("/home/averdow/lab/pictures/pre/test.jpg")
-# knitr::include_graphics("pictures/pre/test.jpg")
 library(magick)
 library(tesseract)
 library(knitr)
 library(dplyr)
 library(pander)
 library(purrr)
-#library(spatstat)
-#library(geostatsp)
 library(tidyverse)
 library(svglite)
 ```
@@ -68,18 +71,18 @@ library(svglite)
 ```{r functions, echo=FALSE, results='hide', message=FALSE}
 get_sample_pic <- function(path) {
   image <- image_read(path)
-  image <- image_crop(image, "1200x1200+1600+1600")
+  image <- image_crop(image, sample_geometry)
   return(image)
 }
 
 get_number_pic <- function(path) {
   number <- image_read(path)
-  number <- image_crop(number, "650x1000+2900+1700")
+  number <- image_crop(number, number_geometry)
   number <- image_rotate(number, 90)
   number <- image_reducenoise(number)
   number <- image_modulate(number, saturation = 0)
-  number <- image_threshold(number,type="white", threshold="70%") 
-  number <- image_threshold(number,type="black", threshold="70%") 
+  number <- image_threshold(number,type="white", threshold=number_threshold) 
+  number <- image_threshold(number,type="black", threshold=number_threshold) 
   number <- image_negate(number)
   # target 32px for letter height
   number <- image_scale(number, "250")
@@ -88,7 +91,8 @@ get_number_pic <- function(path) {
 
 get_number <- function(image) {
   # https://cran.r-project.org/web/packages/tesseract/vignettes/intro.html
-  dice <- tesseract(options = list(tessedit_char_whitelist = "123456"))
+  # 9 is an upside down 6
+  dice <- tesseract(options = list(tessedit_char_whitelist = "1234569"))
   text = tesseract::ocr(image, engine = dice)
   return(text)
 }
@@ -117,15 +121,31 @@ process_file <- function(file) {
     image_write(number_pic, path=number_path, format="png" )
   }
   
+  sample_data <- image_data(sample_pic)
+  sample_hex <- as.vector(sample_data)
+  sample_numeric <- as.numeric(sample_hex)
+  pixels  <- data.frame( 
+      lightness = sample_numeric
+  )
+  average <- mean(sample_numeric)
+  deviation <- sd(sample_numeric)
+  
   number = get_number(number_pic)
   
   hist_path = tmp_path("hist", file, "svg")
   if (file.exists(hist_path) && cache_histograms) {
   } else {
-    pixels <- data.frame( 
-      darkness = as.numeric(as.vector(image_data(sample_pic)))
-    )
-    ggplot(pixels, aes(x=darkness)) + geom_histogram(binwidth=1) + theme_void()
+    ggplot(pixels, aes(x=lightness)) + 
+      xlim(0,255) +
+      geom_histogram(binwidth=1) + 
+      theme(
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()
+      )
     ggsave(hist_path, width=4, height=2, units="cm")
   }
       
@@ -137,7 +157,10 @@ process_file <- function(file) {
     Histogram = hist_path %>% pander::pandoc.image.return(),
     hist_path = hist_path,
     Number = number_path %>% pander::pandoc.image.return(),
-    number_path = number_path
+    number_path = number_path,
+    Average = average,
+    Standard_Deviation = deviation,
+    pixels_numeric = sample_numeric
   )
   
   return(df)
@@ -145,10 +168,13 @@ process_file <- function(file) {
 ``` 
 
 ```{r build_table, echo=FALSE, message=TRUE}
-files <- list.files("pictures/pre", full.names = TRUE)
+files <- list.files("pictures/calibration", full.names = TRUE)
 samples <- map_dfr(files, process_file)
+max(samples$pixels_numeric)
+min(samples$pixels_numeric)
 samples %>% 
-  select(Sample, Histogram) %>%
+  select(Sample, Histogram, Number, OCR, Average, Standard_Deviation) %>%
+  arrange(Average) %>%
   pander(split.table=Inf)
 ```
 
