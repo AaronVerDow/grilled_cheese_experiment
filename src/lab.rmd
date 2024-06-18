@@ -26,19 +26,20 @@ Describe the independent variable(s); include the following information:
 * a description of how the variable(s) will be manipulated
 * description of experimental conditions, if applicable
 
+### E
+Describe the dependent variable(s); include the following information:
+* a description of how the variable(s)will be quantified, including units of measure
+* a description of how the variable(s) will be recorded
+
+### F
+Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
+ 
+### G
+Describe your materials and measurement tools in enough detail that a reader would be able to replicate the experiment.
+
 #### Software setup
 
-NixOS R Studio
-```
-# nix-shell -p rstudio -p pandoc -p texliveFull -p libpng -p pkg-config 
-```
-
-Workaround for R 4.3.3
-```
-# install.packages('lattice')
-# install.packages('https://cran.r-project.org/src/contrib/Archive/Matrix/Matrix_1.6-5.tar.gz')
-# install.packages("reticulate")
-```
+See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
 
 #### GoPro setup
 
@@ -207,7 +208,7 @@ files <- list.files("pictures/calibration", full.names = TRUE)
 samples <- map_dfr(files, process_file)
 ```
 
-```{r write_ocr_cache}
+```{r write_ocr_cache, echo=FALSE}
 ocr_cache <- samples %>% 
   select(Filename, OCR) %>%
   arrange(OCR)
@@ -243,7 +244,14 @@ Each digit represents a specific piece of data:
 
 All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
 row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
-```{r ocr_calibration}
+
+Common issues:
+
+* Number oriented incorrectly
+* Reflection detected as a 1
+* Number on front of die detected
+
+```{r ocr_calibration, echo=FALSE}
 samples %>% 
   arrange(OCR) %>%
   select(Filename, ocr_comparison) %>%
@@ -251,17 +259,6 @@ samples %>%
 ```
 
 
-
-### E
-Describe the dependent variable(s); include the following information:
-* a description of how the variable(s)will be quantified, including units of measure
-* a description of how the variable(s) will be recorded
-
-###F
-Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
- 
-### G
-Describe your materials and measurement tools in enough detail that a reader would be able to replicate the experiment.
 
 ### H
 Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
