@@ -43,20 +43,6 @@ Workaround for R 4.3.3
 #### GoPro setup
 
 #### Image Tests
-
-```{r options, echo=FALSE, results='hide', message=FALSE}
-cache_images <- FALSE
-cache_histograms <- TRUE && cache_images
-
-# open picture in GIMP, select area, use position and size values
-# (take screenshot of this)
-sample_geometry <- "662x746+1564+1822"
-number_geometry <- "243x1674+3372+1413"
-
-# adjust light cutoff for rendering numbers as black and white
-number_threshold <- "85%"
-```
-
 ```{r imports, echo=FALSE, results='hide', message=FALSE}
 library(magick)
 library(tesseract)
@@ -66,6 +52,23 @@ library(pander)
 library(purrr)
 library(tidyverse)
 library(svglite)
+library(yaml)
+library(df2yaml)
+```
+
+```{r options, echo=FALSE, results='hide', message=FALSE}
+cache_images <- TRUE
+cache_histograms <- TRUE && cache_images
+
+# open picture in GIMP, select area, use position and size values
+# (take screenshot of this)
+sample_geometry <- "662x746+1564+1822"
+number_geometry <- "243x1674+3372+1413"
+
+# adjust light cutoff for rendering numbers as black and white
+number_threshold <- "85%"
+
+ocr_cache <- yaml.load_file("ocr.yaml")
 ```
 
 ```{r functions, echo=FALSE, results='hide', message=FALSE}
@@ -93,7 +96,7 @@ get_number <- function(image) {
   # https://cran.r-project.org/web/packages/tesseract/vignettes/intro.html
   # 9 is an upside down 6
   dice <- tesseract(options = list(tessedit_char_whitelist = "1234569"))
-  text = tesseract::ocr(image, engine = dice)
+  text = as.integer(tesseract::ocr(image, engine = dice))
   return(text)
 }
 
@@ -130,21 +133,51 @@ process_file <- function(file) {
   average <- mean(sample_numeric)
   deviation <- sd(sample_numeric)
   
-  number = get_number(number_pic)
+  filename <- basename(file)
+  number <- ocr_cache[[filename]]
+  if (!is.integer(number)) {
+    number = get_number(number_pic)
+  }
+  # ocr_comparison = image_annotate(number_pic, number, size="32", color="red")
+  
+  characters <- strsplit(toString(number), "")[[1]]
+  dice <- 36 # rough size of dice in pixels
+  canvas <- image_blank(1, 1)  # Initialize a blank canvas
+  
+  for (i in seq_along(characters)) {
+    char <- characters[i]
+    die <- image_blank(dice, dice, color="gray90")
+    die <- image_annotate(die, char, size=30, gravity="center", font="Ubuntu" )
+    canvas <- image_append(c(canvas,die))
+  }
+  
+  ocr_comparison = image_append(c(number_pic, canvas), stack=TRUE)
+
+
+  ocr_path = tmp_path("ocr", file, "png")
+  image_write(ocr_comparison, path=ocr_path, format="png" )
   
   hist_path = tmp_path("hist", file, "svg")
   if (file.exists(hist_path) && cache_histograms) {
   } else {
     ggplot(pixels, aes(x=lightness)) + 
-      xlim(0,255) +
-      geom_histogram(binwidth=1) + 
+      expand_limits(x=0) +
+      expand_limits(x=255) +
+      geom_histogram(binwidth=1, color="black") + 
+      scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+      scale_x_continuous(expand = expansion(mult = c(0, 0))) +
+      theme_minimal() +
       theme(
         axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank()
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_rect(fill = "gray90", color = "gray90")
+        # panel.border = element_rect(color = "black", fill = NA, size = 0.1)
       )
     ggsave(hist_path, width=4, height=2, units="cm")
   }
@@ -160,22 +193,36 @@ process_file <- function(file) {
     number_path = number_path,
     Average = average,
     Standard_Deviation = deviation,
-    pixels_numeric = sample_numeric
+    Max = max(sample_numeric),
+    Min = min(sample_numeric),
+    ocr_comparison = ocr_path %>% pander::pandoc.image.return()
   )
   
   return(df)
 }
 ``` 
 
-```{r build_table, echo=FALSE, message=TRUE}
+```{r build_data_frame, echo=FALSE}
 files <- list.files("pictures/calibration", full.names = TRUE)
 samples <- map_dfr(files, process_file)
-max(samples$pixels_numeric)
-min(samples$pixels_numeric)
+```
+
+```{r write_ocr_cache}
+ocr_cache <- samples %>% 
+  select(Filename, OCR) %>%
+  arrange(OCR)
+df2yaml(ocr_cache, key_col="Filename", val_col="OCR", out_yaml="ocr.yaml")
+```
+
+#### OCR Calibration
+
+All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
+row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
+```{r ocr_calibration}
 samples %>% 
-  select(Sample, Histogram, Number, OCR, Average, Standard_Deviation) %>%
-  arrange(Average) %>%
-  pander(split.table=Inf)
+  arrange(OCR) %>%
+  select(Filename, ocr_comparison) %>%
+  pander()
 ```
 
 https://stackoverflow.com/questions/50108763/how-to-insert-images-into-table-in-r-markdown
@@ -200,6 +247,21 @@ Describe your experimental procedure in enough detail that a reader would be abl
 
 ### I
 Summarize the quantitative data gathered from each experimental manipulation. Be sure to highlight the key findings and trends.
+
+```{r data_table}
+samples %>% 
+  select(
+    Sample,
+    Histogram, 
+    Min,
+    Max,
+    Average, 
+    Standard_Deviation
+  ) %>%
+  arrange(Average) %>%
+  pander(split.table=Inf)
+```
+
 
 ### J
 Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
