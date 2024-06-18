@@ -44,6 +44,11 @@ Workaround for R 4.3.3
 
 #### Image Tests
 
+```{r options, echo=FALSE, results='hide', message=FALSE}
+cache_images <- TRUE
+cache_histograms <- FALSE && cache_images
+```
+
 ```{r imports, echo=FALSE, results='hide', message=FALSE}
 # setwd("pictures/pre")
 # knitr::include_graphics("/home/averdow/lab/pictures/pre/test.jpg")
@@ -97,7 +102,7 @@ tmp_path <- function(prefix, path, extension) {
 
 process_file <- function(file) {
   sample_path = tmp_path("sample", file, "png")
-  if (file.exists(sample_path)) {
+  if (file.exists(sample_path) && cache_images) {
     sample_pic <- image_read(sample_path)
   } else {
     sample_pic = get_sample_pic(file)
@@ -105,7 +110,7 @@ process_file <- function(file) {
   }
   
   number_path = tmp_path("number", file, "png")
-  if (file.exists(number_path)) {
+  if (file.exists(number_path) && cache_images) {
     number_pic <- image_read(number_path)
   } else {
     number_pic = get_number_pic(file)
@@ -115,20 +120,24 @@ process_file <- function(file) {
   number = get_number(number_pic)
   
   hist_path = tmp_path("hist", file, "svg")
-  # if (!file.exists(hist_path)) {
+  if (file.exists(hist_path) && cache_histograms) {
+  } else {
     pixels <- data.frame( 
       darkness = as.numeric(as.vector(image_data(sample_pic)))
     )
     ggplot(pixels, aes(x=darkness)) + geom_histogram(binwidth=1) + theme_void()
     ggsave(hist_path, width=4, height=2, units="cm")
-  # }
+  }
       
   df <- data.frame(
     Sample = sample_path %>% pander::pandoc.image.return(),
-    # OCR = number,
-    # Filename = basename(file),
+    sample_path = sample_path,
+    OCR = number,
+    Filename = basename(file),
     Histogram = hist_path %>% pander::pandoc.image.return(),
-    Number = number_path %>% pander::pandoc.image.return()
+    hist_path = hist_path,
+    Number = number_path %>% pander::pandoc.image.return(),
+    number_path = number_path
   )
   
   return(df)
@@ -138,7 +147,9 @@ process_file <- function(file) {
 ```{r build_table, echo=FALSE, message=TRUE}
 files <- list.files("pictures/pre", full.names = TRUE)
 samples <- map_dfr(files, process_file)
-samples %>% pander(split.table=Inf)
+samples %>% 
+  select(Sample, Histogram) %>%
+  pander(split.table=Inf)
 ```
 
 https://stackoverflow.com/questions/50108763/how-to-insert-images-into-table-in-r-markdown
