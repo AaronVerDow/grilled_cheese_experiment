@@ -214,6 +214,31 @@ ocr_cache <- samples %>%
 df2yaml(ocr_cache, key_col="Filename", val_col="OCR", out_yaml="ocr.yaml")
 ```
 
+#### Sample Numbering
+
+Samples are numbered using a 7 digit code using numbers 1-6 and 9.  (Six sides of a die plus 9 as an upside down 6.)
+
+Each digit represents a specific piece of data:
+
+1. Batch Number
+    * 1-6 Experiment(s)
+    * 9 Calibration Tests (ignore)
+1. Grid X
+1. Grid Y
+1. Oil
+    * 1 Light Butter
+    * 2 Heavy Butter
+    * 3 Light Mayo
+    * 4 Heavy Mayo
+    * 9 None
+1. State
+    * 9 Uncooked
+    * 1 Grilled
+1. Unassigned
+    * 9 No meaning
+1. Unassigned
+    * 9 No meaning
+
 #### OCR Calibration
 
 All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
@@ -224,8 +249,6 @@ samples %>%
   select(Filename, ocr_comparison) %>%
   pander()
 ```
-
-https://stackoverflow.com/questions/50108763/how-to-insert-images-into-table-in-r-markdown
 
 
 
