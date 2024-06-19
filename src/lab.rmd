@@ -131,12 +131,14 @@ ocr_cache <- yaml.load_file("ocr.yaml")
 
 generate_sample <- function(path) {
   sample_path = tmp_path("sample", path, "png")
-  if (!file.exists(sample_path)) {
+  if (!file.exists(sample_path) || !cache_images) {
     image_read(path) %>%
     process_sample_pic() %>%
     image_write(path=sample_path, format="png")
   }
-  return(sample_path)
+  return(list(
+    path=sample_path
+  ))
 }
 
 process_sample_pic <- function(image) {
@@ -189,8 +191,25 @@ get_grays <- function(path) {
     return(gray[mask])
 }
 
-get_number_pic <- function(path) {
-  image_read(path) %>%
+generate_id <-function(photo) {
+  path = tmp_path("id", photo, "png")
+  if (!file.exists(path) || !cache_images) {
+    image_read(photo) %>%
+        process_number_pic() %>%
+        image_write(path=path, format="png")
+  }
+
+  id <- cached_ocr(path)
+
+  return(list(
+    path = path,
+    id = id,
+    comparison = ocr_comparison(id, path, photo)
+  ))
+}
+
+process_number_pic <- function(image) {
+  image %>% 
     image_crop(number_geometry) %>%
     image_rotate(90) %>%
     image_reducenoise() %>%
@@ -202,11 +221,47 @@ get_number_pic <- function(path) {
     image_scale("250")
 }
 
-get_number <- function(image) {
+cached_ocr <- function(path) {
+  # use a cache so values can be corrected
+  id <- ocr_cache[[path]]
+  if (!is.integer(id)) {
+    id = dice_ocr(path)
+  }
+  return(id)
+}
+
+dice_ocr <- function(path) {
   # https://cran.r-project.org/web/packages/tesseract/vignettes/intro.html
   # 9 is an upside down 6
+  image = image_read(path)
   dice <- tesseract(options = list(tessedit_char_whitelist = "1234569"))
   as.integer(tesseract::ocr(image, engine = dice))
+}
+
+fake_dice <- function(id) {
+  # these may need to be adjusted
+  die_size <- 36 # rough size of dice in pixels
+  font_size <- 30
+  font <- "Ubuntu"
+
+  canvas <- image_blank(1, 1)  # Initialize a blank canvas
+  chars <- strsplit(toString(id), "")[[1]]
+  for (i in seq_along(chars)) {
+    die <- image_blank(die_size, die_size, color="gray90") %>% 
+      image_annotate(chars[i], size=font_size, gravity="center", font=font )
+    canvas <- image_append(c(canvas,die))
+  }
+  return(canvas)
+}
+
+# I'd like to tidy up this interface later
+ocr_comparison <- function(id, id_path, file_path) {
+  id_pic <- image_read(id_path)
+  canvas <- fake_dice(id)
+  ocr_path = tmp_path("ocr", file_path, "png")
+  image_append(c(id_pic, canvas), stack=TRUE) %>%
+    image_write(path=ocr_path, format="png" )
+  return(ocr_path)
 }
 
 tmp_path <- function(prefix, path, extension) {
@@ -216,73 +271,11 @@ tmp_path <- function(prefix, path, extension) {
   paste("tmp", path, sep="/")
 }
 
-get_values <- function(pic) {
-  pixels <- image_data(pic, channels="rgba")
-  width <- dim(pixels)[2]
-  height <- dim(pixels)[3]
-  avgs <- character()
-  # I give up.  Just do loops
-  for (y in 1:height) {
-    for (x in 1:width) {
-        if (pixels[4, x, y] != 0) {
-          avgs <- c(avgs, as.numeric(pixels[1,x,y]))
-        }
-    }
-  }
-  return(avgs)
-}
-
-
-# Function to calculate luminance for each row
-calculate_luminance <- function(rgb_row) {
-    # Normalize RGB values to the range [0, 1]
-    # R_norm <- rgb_row[1] / 255
-    # G_norm <- rgb_row[2] / 255
-    # B_norm <- rgb_row[3] / 255
-    
-    # https://support.ptc.com/help/mathcad/r10.0/en/index.html#page/PTC_Mathcad_Help/example_grayscale_and_color_in_images.html
-    Y <- 0.299 * rgb_row[1] + 0.587 * rgb_row[2] + 0.114 * rgb_row[3]
-    
-    # Calculate luminance Y using the formula
-    # Y <- 0.2126 * R_norm + 0.7152 * G_norm + 0.0722 * B_norm
-    
-    return(Y)
-}
-
 process_file <- function(file) {
-  sample_path = generate_sample(file)
-  grays = get_grays(sample_path)
-  
-  number_path = tmp_path("number", file, "png")
-  if (file.exists(number_path) && cache_images) {
-    number_pic <- image_read(number_path)
-  } else {
-    number_pic = get_number_pic(file)
-    image_write(number_pic, path=number_path, format="png" )
-  }
-  
-  filename <- basename(file)
-  number <- ocr_cache[[filename]]
-  if (!is.integer(number)) {
-    number = get_number(number_pic)
-  }
-  
-  characters <- strsplit(toString(number), "")[[1]]
-  dice <- 36 # rough size of dice in pixels
-  canvas <- image_blank(1, 1)  # Initialize a blank canvas
-  
-  for (i in seq_along(characters)) {
-    char <- characters[i]
-    die <- image_blank(dice, dice, color="gray90")
-    die <- image_annotate(die, char, size=30, gravity="center", font="Ubuntu" )
-    canvas <- image_append(c(canvas,die))
-  }
-  
-  ocr_comparison = image_append(c(number_pic, canvas), stack=TRUE)
-
-  ocr_path = tmp_path("ocr", file, "png")
-  image_write(ocr_comparison, path=ocr_path, format="png" )
-  
+  sample = generate_sample(file)
+  grays = get_grays(sample$path)
+  id = generate_id(file)
+ 
   hist_path = tmp_path("hist", file, "svg")
   if (file.exists(hist_path) && cache_histograms) {
   } else {
@@ -309,20 +302,20 @@ process_file <- function(file) {
   }
       
   df <- data.frame(
-    Sample = sample_path %>% pander::pandoc.image.return(),
-    sample_path = sample_path,
-    OCR = number,
+    Sample = sample$path %>% pander::pandoc.image.return(),
+    sample_path = sample$path,
+    OCR = id$id,
     Filename = basename(file),
     Histogram = hist_path %>% pander::pandoc.image.return(),
     hist_path = hist_path,
-    Number = number_path %>% pander::pandoc.image.return(),
-    number_path = number_path,
+    Number = id$path %>% pander::pandoc.image.return(),
+    number_path = id$path,
     Pixels = length(grays),
     Average = mean(grays),
     Standard_Deviation = sd(grays),
     Max = max(grays),
     Min = min(grays),
-    ocr_comparison = ocr_path %>% pander::pandoc.image.return()
+    ocr_comparison = id$comparison %>% pander::pandoc.image.return()
   )
   
   return(df)
