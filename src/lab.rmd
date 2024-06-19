@@ -113,7 +113,7 @@ See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
 #### Image Tests
 
 ```{r options, echo=FALSE, results='hide', message=FALSE}
-cache_images <- FALSE
+cache_images <- TRUE
 cache_histograms <- TRUE && cache_images
 
 # open picture in GIMP, select area, use position and size values
@@ -239,6 +239,8 @@ dice_ocr <- function(path) {
 }
 
 fake_dice <- function(id) {
+  # makes an image of id roughly the same size as photo for comparison
+
   # these may need to be adjusted
   die_size <- 36 # rough size of dice in pixels
   font_size <- 30
@@ -264,21 +266,9 @@ ocr_comparison <- function(id, id_path, file_path) {
   return(ocr_path)
 }
 
-tmp_path <- function(prefix, path, extension) {
-  path <- basename(path)
-  path <- gsub("[^/.]*$", extension, path)
-  path <- paste(prefix, path, sep="_")
-  paste("tmp", path, sep="/")
-}
-
-process_file <- function(file) {
-  sample = generate_sample(file)
-  grays = get_grays(sample$path)
-  id = generate_id(file)
- 
-  hist_path = tmp_path("hist", file, "svg")
-  if (file.exists(hist_path) && cache_histograms) {
-  } else {
+generate_histogram <- function(grays, path) {
+  path = tmp_path("histogram", path, "png")
+  if (!file.exists(path) || !cache_histograms) {
     ggplot(data.frame(x=grays), aes(x)) + 
       expand_limits(x=0) +
       expand_limits(x=255) +
@@ -296,20 +286,34 @@ process_file <- function(file) {
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "gray90", color = "gray90")
-        # panel.border = element_rect(color = "black", fill = NA, size = 0.1)
       )
-    ggsave(hist_path, width=4, height=2, units="cm")
+    ggsave(path, width=4, height=2, units="cm")
   }
-      
+  return(list(
+    path=path
+  ))
+}
+
+tmp_path <- function(prefix, path, extension) {
+  path <- basename(path)
+  path <- gsub("[^/.]*$", extension, path)
+  path <- paste(prefix, path, sep="_")
+  paste("tmp", path, sep="/")
+}
+
+process_file <- function(file) {
+  sample = generate_sample(file)
+  grays = get_grays(sample$path)
+  id = generate_id(file)
+  histogram = generate_histogram(grays, file)
+     
   df <- data.frame(
     Sample = sample$path %>% pander::pandoc.image.return(),
     sample_path = sample$path,
     OCR = id$id,
     Filename = basename(file),
-    Histogram = hist_path %>% pander::pandoc.image.return(),
-    hist_path = hist_path,
+    Histogram = histogram$path %>% pander::pandoc.image.return(),
     Number = id$path %>% pander::pandoc.image.return(),
-    number_path = id$path,
     Pixels = length(grays),
     Average = mean(grays),
     Standard_Deviation = sd(grays),
