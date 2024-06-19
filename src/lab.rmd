@@ -1,49 +1,11 @@
 ---
+title: Grilled Cheese Experiment
 output:
   html_document: default
   pdf_document: default
 ---
 ## Section I: Introduction and Literature Review
- 
-### A
-Summarize how at least two reference materials relate to the basic scientific principles of your experiment. Each reference material must come from a different source. Be sure to describe how the references provide a foundational background for the experiment you will conduct.
 
-## Section II: Hypothesis
-
-### B
-
-Make a hypothesis(es) to predict the effect of a manipulation of an independent variable on a quantitative dependent variable.
-
-### C
-
-Justify your hypothesis(es) based on prior research and known scientific principles.
-
-## Section III: Method
-
-### D
-
-Describe the independent variable(s); include the following information:
-* a description of how the variable(s) will be manipulated
-* description of experimental conditions, if applicable
-
-### E
-Describe the dependent variable(s); include the following information:
-* a description of how the variable(s)will be quantified, including units of measure
-* a description of how the variable(s) will be recorded
-
-### F
-Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
- 
-### G
-Describe your materials and measurement tools in enough detail that a reader would be able to replicate the experiment.
-
-#### Software setup
-
-See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
-
-#### GoPro setup
-
-#### Image Tests
 ```{r imports, echo=FALSE, results='hide', message=FALSE}
 library(magick)
 library(tesseract)
@@ -55,10 +17,103 @@ library(tidyverse)
 library(svglite)
 library(yaml)
 library(df2yaml)
+library(tidyr)
 ```
 
+### A
+```{r include=FALSE}
+# Summarize how at least two reference materials relate to the basic scientific principles of your experiment. Each reference material must come from a different source. Be sure to describe how the references provide a foundational background for the experiment you will conduct.
+```
+
+## Section II: Hypothesis
+
+### B
+
+```{r include=FALSE}
+# Make a hypothesis(es) to predicit the effect of a manipulation of an independent variable on a quantitative dependent variable.
+```
+
+### C
+
+```{r include=FALSE}
+# Justify your hypothesis(es) based on prior research and known scientific principles.
+```
+
+## Section III: Method
+
+### D
+```{r include=FALSE}
+# Describe the independent variable(s); include the following information:
+# * a description of how the variable(s) will be manipulated
+# * description of experimental conditions, if applicable
+```
+
+#### Grid
+```{r grid}
+oils = character(0)
+oils_short = character(0)
+
+# explicitly assigning numbers so the assignments never change
+oils[1] = "Light Butter"
+oils_short[1] = "LB"
+
+oils[2] = "Light Mayo"
+oils_short[2] = "LM"
+
+oils[3] = "None"
+oils_short[3] = "X"
+
+oils[4] = "Heavy Butter"
+oils_short[4] = "HB"
+
+oils[5] = "Heavy Mayo"
+oils_short[5] = "HM"
+
+pander(matrix(oils_short, ncol=6, nrow=5, byrow=TRUE),  split.table=Inf)
+
+grid <- data.frame(
+  x = rep(1:6, times=5),
+  y = rep(1:5, each=6),
+  oil_num = rep(1:5)
+)
+
+grid <- mutate(grid,
+  oil = oils[oil_num],
+  id = x*100 + y*10 +oil_num
+)
+
+pander(grid)
+```
+
+
+### E: Dependent Variables
+```{r include=FALSE}
+# Describe the dependent variable(s); include the following information:
+# * a description of how the variable(s)will be quantified, including units of measure
+# * a description of how the variable(s) will be recorded
+# The dependent variable is the darkness of the bread.  This will be measured by photographing each sample in a box with a controlled light source and checking the average value of the pixels.
+```
+
+### F
+```{r include=FALSE}
+# Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
+```
+ 
+### G
+```{r include=FALSE}
+# Describe your materials and measurement tools in enough detail that a reader would be able to replicate the experiment.
+```
+
+#### Software setup
+
+See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
+
+#### GoPro setup
+
+#### Image Tests
+
 ```{r options, echo=FALSE, results='hide', message=FALSE}
-cache_images <- TRUE
+cache_images <- FALSE
 cache_histograms <- TRUE && cache_images
 
 # open picture in GIMP, select area, use position and size values
@@ -73,10 +128,55 @@ ocr_cache <- yaml.load_file("ocr.yaml")
 ```
 
 ```{r functions, echo=FALSE, results='hide', message=FALSE}
-get_sample_pic <- function(path) {
-  image <- image_read(path)
+
+generate_sample <- function(path) {
+  sample_path = tmp_path("sample", path, "png")
+  if (!file.exists(sample_path)) {
+    image_read(path) %>%
+    process_sample_pic() %>%
+    image_write(path=sample_path, format="png")
+  }
+  return(sample_path)
+}
+
+process_sample_pic <- function(image) {
   image <- image_crop(image, sample_geometry)
-  return(image)
+
+  # Add alpha channel
+  pixels <- image_data(image, channels = "rgba")
+  
+  # Extract RGB channels
+  red <- as.numeric(pixels[1,,])
+  green <- as.numeric(pixels[2,,])
+  blue <- as.numeric(pixels[3,,])
+  
+  # Calculate luminance
+  gray <- 0.2126 * red + 0.7152 * green + 0.0722 * blue
+  gray <- as.integer(gray)
+  
+  # Create a binary mask where green is the brightest channel
+  mask <- (green > red) & (green > blue)
+  
+  # Update alpha channel where green is max
+  pixels[4,,][mask] <- as.raw(0)
+  
+  # Update RGB channels with calculated gray value
+  pixels[1,,] <- as.raw(gray)
+  pixels[2,,] <- as.raw(gray)
+  pixels[3,,] <- as.raw(gray)
+  
+  # Convert back to image
+  return(image_read(pixels))
+}
+
+get_grays <- function(path) {
+    # returns a vector of opaque values
+    # image is assumed to be grayscale with rgba channels
+    pixels <- image_read(path) %>% image_data(channels="rgba")
+    gray <- as.numeric(pixels[1,,])
+    alpha <- as.numeric(pixels[4,,])
+    mask <- alpha != 0
+    return(gray[mask])
 }
 
 get_number_pic <- function(path) {
@@ -108,14 +208,42 @@ tmp_path <- function(prefix, path, extension) {
   return(paste("tmp", path, sep="/"))
 }
 
-process_file <- function(file) {
-  sample_path = tmp_path("sample", file, "png")
-  if (file.exists(sample_path) && cache_images) {
-    sample_pic <- image_read(sample_path)
-  } else {
-    sample_pic = get_sample_pic(file)
-    image_write(sample_pic, path=sample_path, format="png" )
+get_values <- function(pic) {
+  pixels <- image_data(pic, channels="rgba")
+  width <- dim(pixels)[2]
+  height <- dim(pixels)[3]
+  avgs <- character()
+  # I give up.  Just do loops
+  for (y in 1:height) {
+    for (x in 1:width) {
+        if (pixels[4, x, y] != 0) {
+          avgs <- c(avgs, as.numeric(pixels[1,x,y]))
+        }
+    }
   }
+  return(avgs)
+}
+
+
+# Function to calculate luminance for each row
+calculate_luminance <- function(rgb_row) {
+    # Normalize RGB values to the range [0, 1]
+    # R_norm <- rgb_row[1] / 255
+    # G_norm <- rgb_row[2] / 255
+    # B_norm <- rgb_row[3] / 255
+    
+    # https://support.ptc.com/help/mathcad/r10.0/en/index.html#page/PTC_Mathcad_Help/example_grayscale_and_color_in_images.html
+    Y <- 0.299 * rgb_row[1] + 0.587 * rgb_row[2] + 0.114 * rgb_row[3]
+    
+    # Calculate luminance Y using the formula
+    # Y <- 0.2126 * R_norm + 0.7152 * G_norm + 0.0722 * B_norm
+    
+    return(Y)
+}
+
+process_file <- function(file) {
+  sample_path = generate_sample(file)
+  grays = get_grays(sample_path)
   
   number_path = tmp_path("number", file, "png")
   if (file.exists(number_path) && cache_images) {
@@ -125,21 +253,11 @@ process_file <- function(file) {
     image_write(number_pic, path=number_path, format="png" )
   }
   
-  sample_data <- image_data(sample_pic)
-  sample_hex <- as.vector(sample_data)
-  sample_numeric <- as.numeric(sample_hex)
-  pixels  <- data.frame( 
-      lightness = sample_numeric
-  )
-  average <- mean(sample_numeric)
-  deviation <- sd(sample_numeric)
-  
   filename <- basename(file)
   number <- ocr_cache[[filename]]
   if (!is.integer(number)) {
     number = get_number(number_pic)
   }
-  # ocr_comparison = image_annotate(number_pic, number, size="32", color="red")
   
   characters <- strsplit(toString(number), "")[[1]]
   dice <- 36 # rough size of dice in pixels
@@ -154,14 +272,13 @@ process_file <- function(file) {
   
   ocr_comparison = image_append(c(number_pic, canvas), stack=TRUE)
 
-
   ocr_path = tmp_path("ocr", file, "png")
   image_write(ocr_comparison, path=ocr_path, format="png" )
   
   hist_path = tmp_path("hist", file, "svg")
   if (file.exists(hist_path) && cache_histograms) {
   } else {
-    ggplot(pixels, aes(x=lightness)) + 
+    ggplot(data.frame(x=grays), aes(x)) + 
       expand_limits(x=0) +
       expand_limits(x=255) +
       geom_histogram(binwidth=1, color="black") + 
@@ -192,10 +309,11 @@ process_file <- function(file) {
     hist_path = hist_path,
     Number = number_path %>% pander::pandoc.image.return(),
     number_path = number_path,
-    Average = average,
-    Standard_Deviation = deviation,
-    Max = max(sample_numeric),
-    Min = min(sample_numeric),
+    Pixels = length(grays),
+    Average = mean(grays),
+    Standard_Deviation = sd(grays),
+    Max = max(grays),
+    Min = min(grays),
     ocr_comparison = ocr_path %>% pander::pandoc.image.return()
   )
   
@@ -221,9 +339,6 @@ Samples are numbered using a 7 digit code using numbers 1-6 and 9.  (Six sides o
 
 Each digit represents a specific piece of data:
 
-1. Batch Number
-    * 1-6 Experiment(s)
-    * 9 Calibration Tests (ignore)
 1. Grid X
 1. Grid Y
 1. Oil
@@ -235,6 +350,9 @@ Each digit represents a specific piece of data:
 1. State
     * 9 Uncooked
     * 1 Grilled
+1. Batch Number
+    * 1-6 Experiment(s)
+    * 9 Calibration Tests (ignore)
 1. Unassigned
     * 9 No meaning
 1. Unassigned
@@ -261,12 +379,16 @@ samples %>%
 
 
 ### H
-Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
- 
+```{r include=FALSE}
+# Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
+```
+
 ## Section IV: Result
 
 ### I
-Summarize the quantitative data gathered from each experimental manipulation. Be sure to highlight the key findings and trends.
+```{r include=FALSE}
+# Summarize the quantitative data gathered from each experimental manipulation. Be sure to highlight the key findings and trends.
+```
 
 ```{r data_table}
 samples %>% 
@@ -284,21 +406,31 @@ samples %>%
 
 
 ### J
-Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
+```{r include=FALSE}
+# Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
+```
  
 
 ## Section V: Conclusions
  
 
 ### K
-Discuss whether your hypothesis(es) was confirmed, refuted, or partially confirmed. Be sure to describe the observed results supporting your conclusion.
+```{r include=FALSE}
+# Discuss whether your hypothesis(es) was confirmed, refuted, or partially confirmed. Be sure to describe the observed results supporting your conclusion.
+```
 
 ### L
-Describe at least one uncontrolled, confounding variable that could have influenced your observed results and any ways the experiment could be improved.
+```{r include=FALSE}
+# Describe at least one uncontrolled, confounding variable that could have influenced your observed results and any ways the experiment could be improved.
+```
  
 ### M
-Discuss how your experimental results relate to the references presented in the literature review.
+```{r include=FALSE}
+# Discuss how your experimental results relate to the references presented in the literature review.
+```
 
 ## Section VI: Sources
 ### N
-Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
+```{r include=FALSE}
+# Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
+```
