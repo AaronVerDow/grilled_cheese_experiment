@@ -113,7 +113,7 @@ See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
 #### Image Tests
 
 ```{r constants, echo=FALSE, results='hide', message=FALSE}
-CACHE_IMAGES <- TRUE
+CACHE_IMAGES <- FALSE
 CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
 
 # open picture in GIMP, select area, use position and size values
@@ -155,7 +155,7 @@ process_sample_pic <- function(image) {
     image %>%
         crop_sample() %>%
         chromakey() %>%
-        grayscale()
+        image_modulate(saturation = 0)
 }
 
 crop_sample <- function(image) {
@@ -174,20 +174,6 @@ chromakey <- function(image) {
 
   pixels[4,,][mask] <- as.raw(0)
   
-  return(image_read(pixels))
-}
-
-
-grayscale <- function(image) {
-  # converts an image to grayscale without dropping alpha channel
-  pixels <- image_data(image, channels="rgba")
-  gray <- image_data(image, channels="gray")
-
-  pixels[1,,] = gray[1,,]
-  pixels[2,,] = gray[1,,]
-  pixels[3,,] = gray[1,,]
-
-  # Convert back to image
   return(image_read(pixels))
 }
 
@@ -407,7 +393,8 @@ samples %>%
     Min,
     Max,
     Average, 
-    Standard_Deviation
+    Standard_Deviation,
+    Pixels
   ) %>%
   arrange(Average) %>%
   pander(split.table=Inf)
