@@ -140,31 +140,41 @@ generate_sample <- function(path) {
 }
 
 process_sample_pic <- function(image) {
-  image <- image_crop(image, sample_geometry)
+    image %>%
+        crop_sample() %>%
+        chromakey() %>%
+        grayscale()
+}
 
-  # Add alpha channel
+crop_sample <- function(image) {
+  image %>%
+      image_crop(sample_geometry)
+}
+
+chromakey <- function(image) {
   pixels <- image_data(image, channels = "rgba")
-  
-  # Extract RGB channels
-  red <- as.numeric(pixels[1,,])
-  green <- as.numeric(pixels[2,,])
-  blue <- as.numeric(pixels[3,,])
-  
-  # Calculate luminance
-  gray <- 0.2126 * red + 0.7152 * green + 0.0722 * blue
-  gray <- as.integer(gray)
-  
-  # Create a binary mask where green is the brightest channel
+
+  red <- pixels[1,,]
+  green <- pixels[2,,]
+  blue <- pixels[3,,]
+
   mask <- (green > red) & (green > blue)
-  
-  # Update alpha channel where green is max
+
   pixels[4,,][mask] <- as.raw(0)
   
-  # Update RGB channels with calculated gray value
-  pixels[1,,] <- as.raw(gray)
-  pixels[2,,] <- as.raw(gray)
-  pixels[3,,] <- as.raw(gray)
-  
+  return(image_read(pixels))
+}
+
+
+grayscale <- function(image) {
+  # converts an image to grayscale without dropping alpha channel
+  pixels <- image_data(image, channels="rgba")
+  gray <- image_data(image, channels="gray")
+
+  pixels[1,,] = gray[1,,]
+  pixels[2,,] = gray[1,,]
+  pixels[3,,] = gray[1,,]
+
   # Convert back to image
   return(image_read(pixels))
 }
@@ -180,32 +190,30 @@ get_grays <- function(path) {
 }
 
 get_number_pic <- function(path) {
-  number <- image_read(path)
-  number <- image_crop(number, number_geometry)
-  number <- image_rotate(number, 90)
-  number <- image_reducenoise(number)
-  number <- image_modulate(number, saturation = 0)
-  number <- image_threshold(number,type="white", threshold=number_threshold) 
-  number <- image_threshold(number,type="black", threshold=number_threshold) 
-  number <- image_negate(number)
-  # target 32px for letter height
-  number <- image_scale(number, "250")
-  return(number)
+  image_read(path) %>%
+    image_crop(number_geometry) %>%
+    image_rotate(90) %>%
+    image_reducenoise() %>%
+    image_modulate(saturation = 0) %>%
+    image_threshold(type="white", threshold=number_threshold)  %>%
+    image_threshold(type="black", threshold=number_threshold)  %>%
+    image_negate() %>%
+    # target 32px for letter height
+    image_scale("250")
 }
 
 get_number <- function(image) {
   # https://cran.r-project.org/web/packages/tesseract/vignettes/intro.html
   # 9 is an upside down 6
   dice <- tesseract(options = list(tessedit_char_whitelist = "1234569"))
-  text = as.integer(tesseract::ocr(image, engine = dice))
-  return(text)
+  as.integer(tesseract::ocr(image, engine = dice))
 }
 
 tmp_path <- function(prefix, path, extension) {
   path <- basename(path)
   path <- gsub("[^/.]*$", extension, path)
   path <- paste(prefix, path, sep="_")
-  return(paste("tmp", path, sep="/"))
+  paste("tmp", path, sep="/")
 }
 
 get_values <- function(pic) {
