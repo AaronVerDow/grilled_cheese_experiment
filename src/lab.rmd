@@ -154,8 +154,7 @@ generate_sample <- function(path) {
 process_sample_pic <- function(image) {
     image %>%
         crop_sample() %>%
-        chromakey() %>%
-        image_modulate(saturation = 0)
+        chromakey()
 }
 
 crop_sample <- function(image) {
@@ -179,8 +178,9 @@ chromakey <- function(image) {
 
 get_grays <- function(path) {
     # returns a vector of opaque values
-    # image is assumed to be grayscale with rgba channels
-    pixels <- image_read(path) %>% image_data(channels="rgba")
+    pixels <- image_read(path) %>% 
+        image_modulate(saturation = 0) %>%
+        image_data(channels="rgba")
     gray <- as.numeric(pixels[1,,])
     alpha <- as.numeric(pixels[4,,])
     mask <- alpha != 0
