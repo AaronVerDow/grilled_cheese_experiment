@@ -112,26 +112,36 @@ See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
 
 #### Image Tests
 
-```{r options, echo=FALSE, results='hide', message=FALSE}
-cache_images <- TRUE
-cache_histograms <- TRUE && cache_images
+```{r constants, echo=FALSE, results='hide', message=FALSE}
+CACHE_IMAGES <- TRUE
+CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
 
 # open picture in GIMP, select area, use position and size values
 # (take screenshot of this)
-sample_geometry <- "662x746+1564+1822"
-number_geometry <- "243x1674+3372+1413"
+SAMPLE_GEOMETRY <- "662x746+1564+1822"
+ID_GEOMETRY <- "243x1674+3372+1413"
 
 # adjust light cutoff for rendering numbers as black and white
-number_threshold <- "85%"
+ID_THRESHOLD <- "85%"
 
-ocr_cache <- yaml.load_file("ocr.yaml")
+# scaling to shrink photograph of ID
+# target value for tesseract is 32 px high letters
+ID_SCALE <- "250"
+
+# options for fake rendering of dice for OCR comparison
+DIE_SIZE <- 36 # rough size of dice in pixels
+DIE_FONT_SIZE <- 30
+DIE_FONT <- "Ubuntu"
+
+OCR_CACHE_PATH <- "ocr.yaml"
+OCR_CACHE <- yaml.load_file(OCR_CACHE_PATH)
 ```
 
 ```{r functions, echo=FALSE, results='hide', message=FALSE}
 
 generate_sample <- function(path) {
   sample_path = tmp_path("sample", path, "png")
-  if (!file.exists(sample_path) || !cache_images) {
+  if (!file.exists(sample_path) || !CACHE_IMAGES) {
     image_read(path) %>%
     process_sample_pic() %>%
     image_write(path=sample_path, format="png")
@@ -150,7 +160,7 @@ process_sample_pic <- function(image) {
 
 crop_sample <- function(image) {
   image %>%
-      image_crop(sample_geometry)
+      image_crop(SAMPLE_GEOMETRY)
 }
 
 chromakey <- function(image) {
@@ -193,7 +203,7 @@ get_grays <- function(path) {
 
 generate_id <-function(photo) {
   path = tmp_path("id", photo, "png")
-  if (!file.exists(path) || !cache_images) {
+  if (!file.exists(path) || !CACHE_IMAGES) {
     image_read(photo) %>%
         process_number_pic() %>%
         image_write(path=path, format="png")
@@ -210,20 +220,20 @@ generate_id <-function(photo) {
 
 process_number_pic <- function(image) {
   image %>% 
-    image_crop(number_geometry) %>%
+    image_crop(ID_GEOMETRY) %>%
     image_rotate(90) %>%
     image_reducenoise() %>%
     image_modulate(saturation = 0) %>%
-    image_threshold(type="white", threshold=number_threshold)  %>%
-    image_threshold(type="black", threshold=number_threshold)  %>%
+    image_threshold(type="white", threshold=ID_THRESHOLD)  %>%
+    image_threshold(type="black", threshold=ID_THRESHOLD)  %>%
     image_negate() %>%
     # target 32px for letter height
-    image_scale("250")
+    image_scale(ID_SCALE)
 }
 
 cached_ocr <- function(path) {
   # use a cache so values can be corrected
-  id <- ocr_cache[[path]]
+  id <- OCR_CACHE[[path]]
   if (!is.integer(id)) {
     id = dice_ocr(path)
   }
@@ -240,17 +250,11 @@ dice_ocr <- function(path) {
 
 fake_dice <- function(id) {
   # makes an image of id roughly the same size as photo for comparison
-
-  # these may need to be adjusted
-  die_size <- 36 # rough size of dice in pixels
-  font_size <- 30
-  font <- "Ubuntu"
-
   canvas <- image_blank(1, 1)  # Initialize a blank canvas
   chars <- strsplit(toString(id), "")[[1]]
   for (i in seq_along(chars)) {
-    die <- image_blank(die_size, die_size, color="gray90") %>% 
-      image_annotate(chars[i], size=font_size, gravity="center", font=font )
+    die <- image_blank(DIE_SIZE, DIE_SIZE, color="gray90") %>% 
+      image_annotate(chars[i], size=DIE_FONT_SIZE, gravity="center", font=DIE_FONT )
     canvas <- image_append(c(canvas,die))
   }
   return(canvas)
@@ -268,7 +272,7 @@ ocr_comparison <- function(id, id_path, file_path) {
 
 generate_histogram <- function(grays, path) {
   path = tmp_path("histogram", path, "png")
-  if (!file.exists(path) || !cache_histograms) {
+  if (!file.exists(path) || !CACHE_HISTOGRAMS) {
     ggplot(data.frame(x=grays), aes(x)) + 
       expand_limits(x=0) +
       expand_limits(x=255) +
@@ -308,18 +312,18 @@ process_file <- function(file) {
   histogram = generate_histogram(grays, file)
      
   df <- data.frame(
-    Sample = sample$path %>% pander::pandoc.image.return(),
+    Sample = sample$path %>% pandoc.image.return(),
     sample_path = sample$path,
     OCR = id$id,
     Filename = basename(file),
-    Histogram = histogram$path %>% pander::pandoc.image.return(),
-    Number = id$path %>% pander::pandoc.image.return(),
+    Histogram = histogram$path %>% pandoc.image.return(),
+    Number = id$path %>% pandoc.image.return(),
     Pixels = length(grays),
     Average = mean(grays),
     Standard_Deviation = sd(grays),
     Max = max(grays),
     Min = min(grays),
-    ocr_comparison = id$comparison %>% pander::pandoc.image.return()
+    ocr_comparison = id$comparison %>% pandoc.image.return()
   )
   
   return(df)
@@ -335,7 +339,7 @@ samples <- map_dfr(files, process_file)
 ocr_cache <- samples %>% 
   select(Filename, OCR) %>%
   arrange(OCR)
-df2yaml(ocr_cache, key_col="Filename", val_col="OCR", out_yaml="ocr.yaml")
+df2yaml(ocr_cache, key_col="Filename", val_col="OCR", out_yaml=OCR_CACHE_PATH)
 ```
 
 #### Sample Numbering
