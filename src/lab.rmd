@@ -20,66 +20,76 @@ library(df2yaml)
 library(tidyr)
 ```
 
-### A
+### A Summary
 ```{r include=FALSE}
 # Summarize how at least two reference materials relate to the basic scientific principles of your experiment. Each reference material must come from a different source. Be sure to describe how the references provide a foundational background for the experiment you will conduct.
 ```
+https://www.littlenorthernbakehouse.com/recipe/gluten-free-test-kitchen-grilled-cheese/
 
 ## Section II: Hypothesis
 
-### B
+### B Hypothesis
 
 ```{r include=FALSE}
-# Make a hypothesis(es) to predicit the effect of a manipulation of an independent variable on a quantitative dependent variable.
+# Make a hypothesis(es) to predict the effect of a manipulation of an independent variable on a quantitative dependent variable.
 ```
 
-### C
+Applying heavy mayo onto bread will result in darker griddled bread than using butter.
+
+### C Justification
 
 ```{r include=FALSE}
 # Justify your hypothesis(es) based on prior research and known scientific principles.
 ```
 
+The use of mayonnaise is commonly acknowledged.
+
 ## Section III: Method
 
-### D
+### D Independent Variables
 ```{r include=FALSE}
 # Describe the independent variable(s); include the following information:
 # * a description of how the variable(s) will be manipulated
 # * description of experimental conditions, if applicable
 ```
 
+* Oil type
+    * This will be controlled by applying either butter or mayonnaise to bread.
+* Oil quantity
+    * This will be controlled by putting oils into a syringe and applying specific quantities to each sample.
+
 #### Grid
 ```{r grid}
-oils = character(0)
-oils_short = character(0)
+oils <- character(0)
+oils_short <- character(0)
 
 # explicitly assigning numbers so the assignments never change
-oils[1] = "Light Butter"
-oils_short[1] = "LB"
+oils[1] <- "Light Butter"
+oils_short[1] <- "LB"
 
-oils[2] = "Light Mayo"
-oils_short[2] = "LM"
+oils[2] <- "Light Mayo"
+oils_short[2] <- "LM"
 
-oils[3] = "None"
-oils_short[3] = "X"
+oils[3] <- "None"
+oils_short[3] <- "X"
 
-oils[4] = "Heavy Butter"
-oils_short[4] = "HB"
+oils[4] <- "Heavy Butter"
+oils_short[4] <- "HB"
 
-oils[5] = "Heavy Mayo"
-oils_short[5] = "HM"
+oils[5] <- "Heavy Mayo"
+oils_short[5] <- "HM"
 
-pander(matrix(oils_short, ncol=6, nrow=5, byrow=TRUE),  split.table=Inf)
+pander(matrix(oils_short, ncol = 6, nrow = 5, byrow = TRUE),  split.table = Inf)
 
 grid <- data.frame(
-  x = rep(1:6, times=5),
-  y = rep(1:5, each=6),
+  x = rep(1:6, times = 5),
+  y = rep(1:5, each = 6),
   oil_num = rep(1:5)
 )
 
 grid <- mutate(grid,
   oil = oils[oil_num],
-  id = x*100 + y*10 +oil_num
+  id = x * 100 + y * 10 + oil_num
 )
 
 pander(grid)
@@ -94,26 +104,142 @@ pander(grid)
 # The dependent variable is the darkness of the bread.  This will be measured by photographing each sample in a box with a controlled light source and checking the average value of the pixels.
 ```
 
-### F
+* Average darkness
+    * The bread darkness will be measured by taking photographs of each sample and analyzing the pixel data.
+
+Getting a quantitative measurement of bread darkness will be done by:
+
+* Photographs will be taken with a camera that has all automated adjustments disabled ensuring consistency between images.
+* Samples will be photographed in a light box with no external light sources.  There is one internal light source set to consistent temperature and luminosity.
+* The camera is mounted in a fixed position in the light box.
+* Images are edited and all pixels not in the bread sample are dropped.
+* Images are converted to gray scale and values of the remaining pixels are analyzed.
+
+### F Confounding Variables
 ```{r include=FALSE}
 # Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
 ```
- 
-### G
+
+* Bread
+    * Initial bread color
+    * Bread size, shape and weight
+    * Bread age
+* Cooking
+    * Griddle temperature
+    * Time on griddle
+    * Griddle placement
+* Oil quantity
+* Photography
+    * Automated camera settings
+    * Ambient light
+
+#### Bread
+
+Bread samples are cut into uniform 35x35mm squares using a bread cutting jig.  This has several benefits:
+* Samples are a uniform size
+* More samples can be placed on the griddle at once, giving more data points for a single test.
+* The crust, which can greatly influence browning, is discarded.
+* Imperfections can be discarded.
+
+The bread samples will be taken from a single loaf of bread so the starting color and age of the bread will be more consistent.
+
+Photographs of each sample will be taken before the experiment so that any variety can be identified ahead of time or accounted for when analyzing the results.
+
+#### Cooking
+
+The samples will be glued to a sheet of parchment paper so they can be placed on the griddle and removed all at the same time.  This will reduce differences in the temperature of the griddle and cooking times.
+
+#### Oils
+
+Mayo will be taken from a single jar and butter from a single stick.
+Both oils will be inserted into large syringes so specific quantities can be applied to each sample.
+
+#### Photography
+
+The camera used is a GoPro Hero 9 with all automated settings turned off.  Light is supplied by a LumeCube LC-Panel 1.  Both are affixed to a box X above the sample.  The box is closed so no external light impacts the photo.
+
+Samples are placed on a pre-marked square in the box so they are in a consistent position.  The surface is a green background that can be removed and ignored via software when analyzing photo data.
+
+### G: Materials and Tools
 ```{r include=FALSE}
 # Describe your materials and measurement tools in enough detail that a reader would be able to replicate the experiment.
 ```
 
+#### Light Box
+
+GoPro Hero 9 Black
+
+Settings as applied through GoPro Quik app:
+
+* Lens: Narrow
+* Output: Standard
+* Scheduled Capture: Off
+* Timer: Timer Off
+* Shutter: 1/125
+* EV Comp: 0
+* ISO Min: 800
+* ISO Max: 800
+* White Balance: 4000K
+* Sharpness: High
+* Color: Flat
+
+LumeCube LC-Panel1
+
+* Brightness: 100%
+* Temperature: 5600K
+
+The camera is placed X above the sample with the light placed horizontally against the camera.
+
+Sample is enclosed so no external light sources impact the photo.
+
+This can easily be replicated by using a 12 bottle TopoChico box.  Cut holes for the camera lens and light into the top and then tape over all holes.  The sample is added and removed by opening and closing the side.
+
+Sample is placed on a green Top Flight Standards notebook cover.
+
+Placement for the samples is marked using a green Post It note.  This is easily to identify and align but will still be ignored by the software if a portion is exposed.
+
+#### Bread
+
+Bread is prepped using this jig to cut it into uniform 35mm squares.
+
+Bread is X
+
+#### Oils
+
+Used syringe (origins unknown, found at scientific surplus.) 
+
+* Mayonnaise used is X
+* Butter used is X
+* Heavy application is X
+* Light application is X
+
+Oils are applied to the center and spread to the edges as uniformly as possible.
+
+#### Assembly
+
+Samples are attached to an XxX sheet of parchment paper within a 240x200mm grid.  Each sample is placed in the center of a 40x40mm square.
+
+Samples are attached to parchment paper using X wood glue.
+
+#### Cooking
+
+The griddle used is X
+
+It will be set to X
+
+Samples will cook until 30 seconds after smoke is observed.
+
 #### Software setup
 
-See GitHub repository https://github.com/AaronVerDow/grilled_cheese_experiment/
+This document is written in R Markdown and the software for all image processing and graph generation is included inline.  Most of the code is hidden in the rendered output but the source code is available at: https://github.com/AaronVerDow/grilled_cheese_experiment/
 
-#### GoPro setup
+This instance was rendered on commit ID:
+```{r git_id, echo=FALSE}
+system("git rev-parse HEAD", intern = TRUE)
+```
 
-#### Image Tests
-
-```{r constants, echo=FALSE, results='hide', message=FALSE}
-CACHE_IMAGES <- FALSE
+```{r constants, echo=FALSE, results='hide', messages=FALSE}
+CACHE_IMAGES <- TRUE
 CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
 
 # open picture in GIMP, select area, use position and size values
@@ -137,62 +263,72 @@ OCR_CACHE_PATH <- "ocr.yaml"
 OCR_CACHE <- yaml.load_file(OCR_CACHE_PATH)
 ```
 
-```{r functions, echo=FALSE, results='hide', message=FALSE}
+Functions for measuring samples: (other functions are hidden in the rendered version of this document
 
+```{r functions, echo=FALSE, results='hide', message=FALSE}
 generate_sample <- function(path) {
-  sample_path = tmp_path("sample", path, "png")
+  sample_path <- tmp_path("sample", path, "png")
   if (!file.exists(sample_path) || !CACHE_IMAGES) {
     image_read(path) %>%
-    process_sample_pic() %>%
-    image_write(path=sample_path, format="png")
+      process_sample_pic() %>%
+      image_write(path = sample_path, format = "png")
   }
   return(list(
-    path=sample_path
+    path = sample_path
   ))
 }
 
 process_sample_pic <- function(image) {
-    image %>%
-        crop_sample() %>%
-        chromakey()
+  image %>%
+    crop_sample() %>%
+    chromakey()
 }
 
 crop_sample <- function(image) {
   image %>%
-      image_crop(SAMPLE_GEOMETRY)
+    image_crop(SAMPLE_GEOMETRY)
 }
+```
 
+This function accepts an image of a sample (already cropped) and per pixel will compare the red, green, and blue values.  If green is the highest value the alpha channel will be set to 0 making that pixel as transparent.  The accuracy of this function can be seen in the tables below and by looking at the overall pixel count per sample (though inconsistency in bread sizes can also create variety there.)
+
+```{r chormakey_function}
 chromakey <- function(image) {
   pixels <- image_data(image, channels = "rgba")
 
-  red <- pixels[1,,]
-  green <- pixels[2,,]
-  blue <- pixels[3,,]
+  red <- pixels[1, , ]
+  green <- pixels[2, , ]
+  blue <- pixels[3, , ]
 
   mask <- (green > red) & (green > blue)
 
-  pixels[4,,][mask] <- as.raw(0)
-  
+  pixels[4, , ][mask] <- as.raw(0)
   return(image_read(pixels))
 }
+```
 
+This function accepts an image from the chroma key function above.  It will use Image Magick to set the saturation to zero converting it to gray scale.  In this state the red, green, and blue channels all contain the same values.  The alpha channel is extracted and a bit mask is created excluding all pixels set to full transparency.  This bit mask is applied to one of the color channels and the remaining values are returned in numeric format for analysis.  The end result is a list of the relative lightness of each pixel on the sample only, all pixels that were green are ignored.
+
+```{r get_grays_function}
 get_grays <- function(path) {
-    # returns a vector of opaque values
-    pixels <- image_read(path) %>% 
-        image_modulate(saturation = 0) %>%
-        image_data(channels="rgba")
-    gray <- as.numeric(pixels[1,,])
-    alpha <- as.numeric(pixels[4,,])
-    mask <- alpha != 0
-    return(gray[mask])
+  # returns a vector of opaque values
+  pixels <- image_read(path) %>%
+    image_modulate(saturation = 0) %>%
+    image_data(channels = "rgba")
+  gray <- as.numeric(pixels[1, , ])
+  alpha <- as.numeric(pixels[4, , ])
+  mask <- alpha != 0
+  return(gray[mask])
 }
+```
 
-generate_id <-function(photo) {
-  path = tmp_path("id", photo, "png")
+```{r more_functions, echo=FALSE, results='hide', messages=FALSE}
+generate_id <- function(photo) {
+  path <- tmp_path("id", photo, "png")
   if (!file.exists(path) || !CACHE_IMAGES) {
     image_read(photo) %>%
-        process_number_pic() %>%
-        image_write(path=path, format="png")
+      process_number_pic() %>%
+      image_write(path = path, format = "png")
   }
 
   id <- cached_ocr(path)
@@ -205,13 +341,13 @@ generate_id <-function(photo) {
 }
 
 process_number_pic <- function(image) {
-  image %>% 
+  image %>%
     image_crop(ID_GEOMETRY) %>%
     image_rotate(90) %>%
     image_reducenoise() %>%
     image_modulate(saturation = 0) %>%
-    image_threshold(type="white", threshold=ID_THRESHOLD)  %>%
-    image_threshold(type="black", threshold=ID_THRESHOLD)  %>%
+    image_threshold(type = "white", threshold = ID_THRESHOLD)  %>%
+    image_threshold(type = "black", threshold = ID_THRESHOLD)  %>%
     image_negate() %>%
     # target 32px for letter height
     image_scale(ID_SCALE)
@@ -221,7 +357,7 @@ cached_ocr <- function(path) {
   # use a cache so values can be corrected
   id <- OCR_CACHE[[path]]
   if (!is.integer(id)) {
-    id = dice_ocr(path)
+    id <- dice_ocr(path)
   }
   return(id)
 }
@@ -229,7 +365,7 @@ cached_ocr <- function(path) {
 dice_ocr <- function(path) {
   # https://cran.r-project.org/web/packages/tesseract/vignettes/intro.html
   # 9 is an upside down 6
-  image = image_read(path)
+  image <- image_read(path)
   dice <- tesseract(options = list(tessedit_char_whitelist = "1234569"))
   as.integer(tesseract::ocr(image, engine = dice))
 }
@@ -239,9 +375,14 @@ fake_dice <- function(id) {
   canvas <- image_blank(1, 1)  # Initialize a blank canvas
   chars <- strsplit(toString(id), "")[[1]]
   for (i in seq_along(chars)) {
-    die <- image_blank(DIE_SIZE, DIE_SIZE, color="gray90") %>% 
-      image_annotate(chars[i], size=DIE_FONT_SIZE, gravity="center", font=DIE_FONT )
-    canvas <- image_append(c(canvas,die))
+    die <- image_blank(DIE_SIZE, DIE_SIZE, color = "gray90") %>%
+      image_annotate(
+        chars[i],
+        size = DIE_FONT_SIZE,
+        gravity = "center",
+        font = DIE_FONT
+      )
+    canvas <- image_append(c(canvas, die))
   }
   return(canvas)
 }
@@ -250,53 +391,50 @@ fake_dice <- function(id) {
 ocr_comparison <- function(id, id_path, file_path) {
   id_pic <- image_read(id_path)
   canvas <- fake_dice(id)
-  ocr_path = tmp_path("ocr", file_path, "png")
-  image_append(c(id_pic, canvas), stack=TRUE) %>%
-    image_write(path=ocr_path, format="png" )
+  ocr_path <- tmp_path("ocr", file_path, "png")
+  image_append(c(id_pic, canvas), stack = TRUE) %>%
+    image_write(path = ocr_path, format = "png")
   return(ocr_path)
 }
 
 generate_histogram <- function(grays, path) {
-  path = tmp_path("histogram", path, "png")
+  path <- tmp_path("histogram", path, "png")
   if (!file.exists(path) || !CACHE_HISTOGRAMS) {
-    ggplot(data.frame(x=grays), aes(x)) + 
-      expand_limits(x=0) +
-      expand_limits(x=255) +
-      geom_histogram(binwidth=1, color="black") + 
+    ggplot(data.frame(x = grays), aes(x)) +
+      expand_limits(x = 0) +
+      expand_limits(x = 255) +
+      geom_histogram(binwidth = 1, color = "black") +
       scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
       scale_x_continuous(expand = expansion(mult = c(0, 0))) +
       theme_minimal() +
       theme(
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.background = element_rect(fill = "gray90", color = "gray90")
       )
-    ggsave(path, width=4, height=2, units="cm")
+    ggsave(path, width = 4, height = 2, units = "cm")
   }
-  return(list(
-    path=path
-  ))
+  return(list(path = path))
 }
 
 tmp_path <- function(prefix, path, extension) {
   path <- basename(path)
   path <- gsub("[^/.]*$", extension, path)
-  path <- paste(prefix, path, sep="_")
-  paste("tmp", path, sep="/")
+  path <- paste(prefix, path, sep = "_")
+  paste("tmp", path, sep = "/")
 }
 
 process_file <- function(file) {
-  sample = generate_sample(file)
-  grays = get_grays(sample$path)
-  id = generate_id(file)
-  histogram = generate_histogram(grays, file)
-     
+  sample <- generate_sample(file)
+  grays <- get_grays(sample$path)
+  id <- generate_id(file)
+  histogram <- generate_histogram(grays, file)
   df <- data.frame(
     Sample = sample$path %>% pandoc.image.return(),
     sample_path = sample$path,
@@ -311,7 +449,6 @@ process_file <- function(file) {
     Min = min(grays),
     ocr_comparison = id$comparison %>% pandoc.image.return()
   )
-  
   return(df)
 }
 ``` 
@@ -322,10 +459,15 @@ samples <- map_dfr(files, process_file)
 ```
 
 ```{r write_ocr_cache, echo=FALSE}
-ocr_cache <- samples %>% 
+ocr_cache <- samples %>%
   select(Filename, OCR) %>%
   arrange(OCR)
-df2yaml(ocr_cache, key_col="Filename", val_col="OCR", out_yaml=OCR_CACHE_PATH)
+df2yaml(
+  ocr_cache,
+  key_col = "Filename",
+  val_col = "OCR",
+  out_yaml = OCR_CACHE_PATH
+)
 ```
 
 #### Sample Numbering
@@ -353,25 +495,6 @@ Each digit represents a specific piece of data:
 1. Unassigned
     * 9 No meaning
 
-#### OCR Calibration
-
-All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
-row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
-
-Common issues:
-
-* Number oriented incorrectly
-* Reflection detected as a 1
-* Number on front of die detected
-
-```{r ocr_calibration, echo=FALSE}
-samples %>% 
-  arrange(OCR) %>%
-  select(Filename, ocr_comparison) %>%
-  pander()
-```
-
-
 
 ### H
 ```{r include=FALSE}
@@ -386,18 +509,18 @@ samples %>%
 ```
 
 ```{r data_table}
-samples %>% 
+samples %>%
   select(
     Sample,
-    Histogram, 
+    Histogram,
     Min,
     Max,
-    Average, 
+    Average,
     Standard_Deviation,
     Pixels
   ) %>%
   arrange(Average) %>%
-  pander(split.table=Inf)
+  pander(split.table = Inf)
 ```
 
 
@@ -430,3 +553,25 @@ samples %>%
 ```{r include=FALSE}
 # Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
 ```
+
+## Appendix
+
+### OCR Calibration
+
+All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
+row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
+
+Common issues:
+
+* Number oriented incorrectly
+* Reflection detected as a 1
+* Number on front of die detected
+
+```{r ocr_calibration, echo=FALSE}
+samples %>%
+  arrange(OCR) %>%
+  select(Filename, ocr_comparison) %>%
+  pander()
+```
+
+
