@@ -204,6 +204,9 @@ Bread is prepped using this jig to cut it into uniform 35mm squares.
 
 Bread is X
 
+#### Cutting Jig
+
+
 #### Oils
 
 Used syringe (origins unknown, found at scientific surplus.) 
@@ -331,7 +334,7 @@ generate_id <- function(photo) {
       image_write(path = path, format = "png")
   }
 
-  id <- cached_ocr(path)
+  id <- cached_ocr(photo, path)
 
   return(list(
     path = path,
@@ -353,11 +356,12 @@ process_number_pic <- function(image) {
     image_scale(ID_SCALE)
 }
 
-cached_ocr <- function(path) {
+cached_ocr <- function(photo, id_path) {
   # use a cache so values can be corrected
-  id <- OCR_CACHE[[path]]
+  base <- basename(photo)
+  id <- OCR_CACHE[[base]]
   if (!is.integer(id)) {
-    id <- dice_ocr(path)
+    id <- dice_ocr(id_path)
   }
   return(id)
 }
@@ -453,8 +457,8 @@ process_file <- function(file) {
 }
 ``` 
 
-```{r build_data_frame, echo=FALSE}
-files <- list.files("pictures/calibration", full.names = TRUE)
+```{r build_data_frame}
+files <- list.files("pictures/one", full.names = TRUE)
 samples <- map_dfr(files, process_file)
 ```
 
@@ -501,6 +505,24 @@ Each digit represents a specific piece of data:
 # Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
 ```
 
+* Draw grid, number back side of each square individually
+* Buy a loaf of bread
+* Use jig to cut 30 35x35mm square samples
+* Photograph each sample
+* Glue to grid after photograph
+* Wrap assembled grid in aluminum foil to protect samples while glue sets
+* Once glue has set apply oil to samples
+  * Insert quantities
+* Preheat griddle
+* Leave on for an additional 10 minutes
+* Place samples on griddle, start timer
+* Wait until smoke from bread is visible
+* Wait additional 30 seconds
+* Remove grid from griddle, note time
+* Photograph each sample
+* Analyze results
+
+
 ## Section IV: Result
 
 ### I
@@ -524,7 +546,7 @@ samples %>%
 ```
 
 
-### J
+### J: Visual Representation
 ```{r include=FALSE}
 # Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
 ```
