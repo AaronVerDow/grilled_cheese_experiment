@@ -439,6 +439,7 @@ process_file <- function(file) {
   grays <- get_grays(sample$path)
   id <- generate_id(file)
   histogram <- generate_histogram(grays, file)
+  oil_no = as.integer(substr(as.character(id$id), 3, 3))
   df <- data.frame(
     Sample = sample$path %>% pandoc.image.return(),
     sample_path = sample$path,
@@ -451,6 +452,7 @@ process_file <- function(file) {
     Standard_Deviation = sd(grays),
     Max = max(grays),
     Min = min(grays),
+    Oil = oils[[oil_no]],
     ocr_comparison = id$comparison %>% pandoc.image.return()
   )
   return(df)
@@ -533,6 +535,7 @@ Each digit represents a specific piece of data:
 ```{r data_table}
 samples %>%
   select(
+    Oil,
     Sample,
     Histogram,
     Min,
