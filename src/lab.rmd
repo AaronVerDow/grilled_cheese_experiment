@@ -20,33 +20,44 @@ library(df2yaml)
 library(tidyr)
 ```
 
-### A Summary
+### A: Summary
 ```{r include=FALSE}
 # Summarize how at least two reference materials relate to the basic scientific principles of your experiment. Each reference material must come from a different source. Be sure to describe how the references provide a foundational background for the experiment you will conduct.
 ```
-https://www.littlenorthernbakehouse.com/recipe/gluten-free-test-kitchen-grilled-cheese/
+
+Several sources claim that using mayonnaise instead of butter on the outside of sandwiches makes a better grilled cheese sandwich.
+
+According to Southern Living:
+
+> The secret to your best-ever grilled cheese? Mayonnaise. Next time you make one, don't smother your bread in butter like usual. Instead, slather on the mayo; it'll add a tang and create a perfectly crisp exterior. 
+
+The Food Network:
+
+>  If you butter only the inside of your bread and spread a thin schmear of mayo on the exterior of the sandwich, you create the ideal conditions for the bread to toast, cheese to melt and butter to shine. The mayonnaise doesn’t actually provide flavor — if you’re a mayo hater, you won’t even taste it, I promise — but instead encourages ideal browning and melting.
+
+I made grilled cheese sandwiches this way for many years.  Recently I had to start avoiding gluten and since then have struggled to make a grilled cheese with my preferred level of darkness before the cheese starts to break down from the heat.  This experiment will be testing the browning performance of mayo over butter with the specific bread and oils I eat.
 
 ## Section II: Hypothesis
 
-### B Hypothesis
+### B: Hypothesis
 
 ```{r include=FALSE}
 # Make a hypothesis(es) to predict the effect of a manipulation of an independent variable on a quantitative dependent variable.
 ```
 
-Applying heavy mayo onto bread will result in darker griddled bread than using butter.
+Applying heavy mayo onto bread will result in darker griddled bread than using butter or a light coat of mayonnaise.
 
-### C Justification
+### C: Justification
 
 ```{r include=FALSE}
 # Justify your hypothesis(es) based on prior research and known scientific principles.
 ```
 
-The use of mayonnaise is commonly acknowledged.
+Proponents of the use of mayonnaise on grilled cheese claim it results in better browning of the bread.  Personal anecdotal tests (making and eating grilled cheese sandwiches) back this up.
 
 ## Section III: Method
 
-### D Independent Variables
+### D: Independent Variables
 ```{r include=FALSE}
 # Describe the independent variable(s); include the following information:
 # * a description of how the variable(s) will be manipulated
@@ -57,6 +68,8 @@ The use of mayonnaise is commonly acknowledged.
     * This will be controlled by applying either butter or mayonnaise to bread.
 * Oil quantity
     * This will be controlled by putting oils into a syringe and applying specific quantities to each sample.
+    * Light = 0.5 mL
+    * Heavy = 1 mL
 
 #### Grid
 ```{r grid}
@@ -115,7 +128,7 @@ Getting a quantitative measurement of bread darkness will be done by:
 * Images are edited and all pixels not in the bread sample are dropped.
 * Images are converted to gray scale and values of the remaining pixels are analyzed.
 
-### F Confounding Variables
+### F: Confounding Variables
 ```{r include=FALSE}
 # Describe at least one external, confounding variable and how it will be controlled. Be sure to justify how your method of controlling that variable will mitigate any confounding effect on observed results.
 ```
@@ -136,7 +149,7 @@ Getting a quantitative measurement of bread darkness will be done by:
 #### Bread
 
 Bread samples are cut into uniform 35x35mm squares using a bread cutting jig.  This has several benefits:
-* Samples are a uniform size
+* Samples are a uniform size.
 * More samples can be placed on the griddle at once, giving more data points for a single test.
 * The crust, which can greatly influence browning, is discarded.
 * Imperfections can be discarded.
@@ -147,18 +160,17 @@ Photographs of each sample will be taken before the experiment so that any varie
 
 #### Cooking
 
-The samples will be glued to a sheet of parchment paper so they can be placed on the griddle and removed all at the same time.  This will reduce differences in the temperature of the griddle and cooking times.
+The samples will be glued to a sheet of paper so they can be placed on the griddle and removed all at the same time.  This will reduce differences in the temperature of the griddle and cooking times.
 
 #### Oils
 
-Mayo will be taken from a single jar and butter from a single stick.
-Both oils will be inserted into large syringes so specific quantities can be applied to each sample.
+Mayo will be taken from a single jar and butter from a single stick.  Both oils will be inserted into large syringes so specific quantities can be applied to each sample.
 
 #### Photography
 
 The camera used is a GoPro Hero 9 with all automated settings turned off.  Light is supplied by a LumeCube LC-Panel 1.  Both are affixed to a box X above the sample.  The box is closed so no external light impacts the photo.
 
-Samples are placed on a pre-marked square in the box so they are in a consistent position.  The surface is a green background that can be removed and ignored via software when analyzing photo data.
+Samples are placed on a pre-marked square in the box so they are in a consistent position.  The surface is a green background that is removed via software before analysis.
 
 ### G: Materials and Tools
 ```{r include=FALSE}
@@ -175,7 +187,7 @@ Settings as applied through GoPro Quik app:
 * Output: Standard
 * Scheduled Capture: Off
 * Timer: Timer Off
-* Shutter: 1/125
+* Shutter: 1/250
 * EV Comp: 0
 * ISO Min: 800
 * ISO Max: 800
@@ -192,9 +204,7 @@ The camera is placed X above the sample with the light placed horizontally again
 
 Sample is enclosed so no external light sources impact the photo.
 
-This can easily be replicated by using a 12 bottle TopoChico box.  Cut holes for the camera lens and light into the top and then tape over all holes.  The sample is added and removed by opening and closing the side.
-
-Sample is placed on a green Top Flight Standards notebook cover.
+This can easily be replicated by using a 12 count glass bottle TopoChico box.  Cut holes for the camera lens and light into the top and then tape over all holes.  The sample is added and removed by opening and closing the side.
 
 Placement for the samples is marked using a green Post It note.  This is easily to identify and align but will still be ignored by the software if a portion is exposed.
 
@@ -213,24 +223,18 @@ Used syringe (origins unknown, found at scientific surplus.)
 
 * Mayonnaise used is X
 * Butter used is X
-* Heavy application is X
-* Light application is X
+* Heavy application is 0.5 mL
+* Light application is 1 mL
 
 Oils are applied to the center and spread to the edges as uniformly as possible.
 
 #### Assembly
 
-Samples are attached to an XxX sheet of parchment paper within a 240x200mm grid.  Each sample is placed in the center of a 40x40mm square.
-
-Samples are attached to parchment paper using X wood glue.
+Each sample is attached with wood glue to the center of a 40x40mm square within a 240x200mm grid.
 
 #### Cooking
 
 The griddle used is X
-
-It will be set to X
-
-Samples will cook until 30 seconds after smoke is observed.
 
 #### Software setup
 
@@ -242,12 +246,27 @@ system("git rev-parse HEAD", intern = TRUE)
 ```
 
 ```{r constants, echo=FALSE, results='hide', messages=FALSE}
+# Where to pull images from (relative to this document)
+IMAGES_DIRECTORY = "pictures/one"
+
 CACHE_IMAGES <- TRUE
 CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
 
 # open picture in GIMP, select area, use position and size values
 # (take screenshot of this)
+SAMPLE_CROP <- c(
+  662,
+  746,
+  1564,
+  1822
+)
 SAMPLE_GEOMETRY <- "662x746+1564+1822"
+ID_CROP <- c(
+  243, # X
+  1674, # Y
+  3372, # X offset
+  1413  # Y offset
+)
 ID_GEOMETRY <- "243x1674+3372+1413"
 
 # adjust light cutoff for rendering numbers as black and white
@@ -440,6 +459,7 @@ process_file <- function(file) {
   id <- generate_id(file)
   histogram <- generate_histogram(grays, file)
   oil_no = as.integer(substr(as.character(id$id), 3, 3))
+  state_no = as.integer(substr(as.character(id$id), 4, 4))
   df <- data.frame(
     Sample = sample$path %>% pandoc.image.return(),
     sample_path = sample$path,
@@ -453,6 +473,7 @@ process_file <- function(file) {
     Max = max(grays),
     Min = min(grays),
     Oil = oils[[oil_no]],
+    Grilled = if_else(state_no == 1, TRUE, FALSE),
     ocr_comparison = id$comparison %>% pandoc.image.return()
   )
   return(df)
@@ -460,8 +481,15 @@ process_file <- function(file) {
 ``` 
 
 ```{r build_data_frame}
-files <- list.files("pictures/one", full.names = TRUE)
+files <- list.files(IMAGES_DIRECTORY, full.names = TRUE)
 samples <- map_dfr(files, process_file)
+
+grilled <- samples %>%
+  filter(Grilled == TRUE)
+
+raw <- samples %>%
+  filter(Grilled == FALSE)
+
 ```
 
 ```{r write_ocr_cache, echo=FALSE}
@@ -476,14 +504,20 @@ df2yaml(
 )
 ```
 
+### H: Procedure
+```{r include=FALSE}
+# Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
+```
+
 #### Sample Numbering
+Reference this section every time there is mention of setting number or dice.
 
 Samples are numbered using a 7 digit code using numbers 1-6 and 9.  (Six sides of a die plus 9 as an upside down 6.)
 
 Each digit represents a specific piece of data:
 
-1. Grid X
-1. Grid Y
+1. Grid X, 1-6
+1. Grid Y, 1-5
 1. Oil
     * 1 Light Butter
     * 2 Heavy Butter
@@ -501,48 +535,104 @@ Each digit represents a specific piece of data:
 1. Unassigned
     * 9 No meaning
 
+Digits 1-3 are set per sample and digits 4-7 are set per batch.
 
-### H
-```{r include=FALSE}
-# Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
+#### Photograph Procedure
+This will be repeated every time a photograph is taken.
+
+* Set dice to identify sample and oil used.
+* Place sample in light box
+* Check camera to make sure sample is properly aligned (no section of Post-It note is visible)
+  * (GoPro Quik phone app is recommended for convenience.)
+* Close light box
+* Take photo
+  * (GoPro Quik phone app or other remote trigger is recommended to avoid jostling the box.)
+* Open box and place sample back into its place on the grid.
+
+#### Experiment Procedure
+* Draw a grid of 40mm squares totaling 240x200mm on a thick sheet of paper (cutout from a brown paper bag works well.)
+* Set dice for experiment number and grilled state.
+* Fill syringe with wood glue
+* Cut and place Samples
+  * Use jig to cut a 35x35mm square
+  * Photograph sample
+  * Apply 1 mL of wood glue to back of sample
+  * Place sample on paper grid
+  * Repeat until grid is filled
+* Allow glue to dry
+  * Wrap grid in aluminum foil to reduce drying of bread samples
+  * Place a uniform weight on the grid to flatten out the bread samples and ensure proper adhesion
+  * Let the glue set for an hour
+* Fill butter and mayo syringes
+  * Both butter and mayo should be room temperature.  Butter can be left out overnight but I recommend using a new jar of mayonnaise from the store.
+* Turn on griddle and set it to 450 degrees
+  * This is very early to start pre-heating but the goal here is to give plenty of time for heat to be evenly distributed around the griddle surface and not just directly around the burners.
+* Apply oils to samples using the charts below.
+  * A single dollop in the center measured out to 1 mL for heavy samples and 0.5 mL for light samples
+  * Using only one side of a butter knife scoop a quarter of the dollop and spread to each edge
+  * Wipe any remaining oil on the knife onto any exposed edges
+  * Clean knife between samples to avoid buildup
+* Place grid in center of hot griddle.
+* Place weight on top of sample grid.
+* Let cook for 4:30 minutes.
+* Carefully rotate the grid to break samples loose without removing them from heat.
+* Once all samples are loose lift grid off the griddle and set aside.
+* Once cooled carefully peel each sample off the grid and photograph.
+  * The bread should separate in the middle between the glued back and grilled front.
+
+#### Data Review
+* `git clone https://github.com/AaronVerDow/grilled_cheese_experiment/`
+* Copy photos of samples to a directory under `src/pictures`
+* Update IMAGES_DIRECTORY in constants to point to new directory
+* Knit this document
+* Adjust sample and ID geometry if photos are improperly cropped
+* Look over "OCR Corrections" in the Appendix and confirm all photos have been correctly identified
+```{r}
+
+outline <- function(geometry, border="red") { 
+  rect(
+    geometry[[3]],
+    geometry[[4]],
+    geometry[[3]] + geometry[[1]],
+    geometry[[4]] + geometry[[2]],
+    border = border, lty = "dashed", lwd = 30
+  )
+}
+
+calibration_path <- "tmp/calibration.png"
+if (!file.exists(calibration_path) || !CACHE_IMAGES) {
+  calibration <- image_read(files[[1]]) %>%
+    # image_annotate("test", size=100) %>%
+    image_draw()
+  outline(SAMPLE_CROP)
+  outline(ID_CROP, "blue")
+  dev.off()
+  image_write(calibration, path = calibration_path, format = "png")
+}
+image_read(calibration_path)
+
 ```
-
-* Draw grid, number back side of each square individually
-* Buy a loaf of bread
-* Use jig to cut 30 35x35mm square samples
-* Photograph each sample
-* Glue to grid after photograph
-* Wrap assembled grid in aluminum foil to protect samples while glue sets
-* Once glue has set apply oil to samples
-  * Insert quantities
-* Preheat griddle
-* Leave on for an additional 10 minutes
-* Place samples on griddle, start timer
-* Wait until smoke from bread is visible
-* Wait additional 30 seconds
-* Remove grid from griddle, note time
-* Photograph each sample
-* Analyze results
-
 
 ## Section IV: Result
 
-### I
+### I: Data Summary
 ```{r include=FALSE}
 # Summarize the quantitative data gathered from each experimental manipulation. Be sure to highlight the key findings and trends.
 ```
 
-```{r data_table}
-samples %>%
+Table of each sample ordered by average darkness:
+
+```{r data_table, echo=FALSE}
+grilled %>%
   select(
     Oil,
     Sample,
     Histogram,
+    Pixels,
     Min,
     Max,
-    Average,
     Standard_Deviation,
-    Pixels
+    Average
   ) %>%
   arrange(Average) %>%
   pander(split.table = Inf)
@@ -553,44 +643,113 @@ samples %>%
 ```{r include=FALSE}
 # Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
 ```
- 
 
-## Section V: Conclusions
- 
+Box plot of the average lightness values grouped by oil:
 
-### K
+```{r results, echo=FALSE}
+# This also works
+# samples %>%
+  # group_by(Oil) %>%
+  # summarize(average_mean = mean(Average, na.rm = TRUE))
+
+mean_by_oil <- function(data) {
+  means  <- aggregate(data$Average, list(data$Oil), FUN=mean)
+  colnames(means) <- c("Oil", "Mean")
+  means %>%
+    arrange(Mean) %>%
+    pander()
+}
+
+# mean_by_oil(grilled)
+# mean_by_oil(raw)
+
+mean_order <- grilled %>%
+  group_by(Oil) %>%
+  summarize(mean_average = mean(Average, na.rm = TRUE)) %>%
+  arrange(mean_average)
+
+grilled <- grilled %>%
+  mutate(Oil = factor(Oil, levels = mean_order$Oil))
+
+raw <- raw %>%
+  mutate(Oil = factor(Oil, levels = mean_order$Oil))
+
+mean_oil_boxplot <- function(data) {
+  data %>% 
+    select(Oil, Average) %>%
+    ggplot(aes(x = Oil, y = Average)) +
+    geom_boxplot()
+}
+
+mean_oil_boxplot(grilled)
+```
+
+## Section V: Conclusions 
+
+### K: Conclusions
 ```{r include=FALSE}
 # Discuss whether your hypothesis(es) was confirmed, refuted, or partially confirmed. Be sure to describe the observed results supporting your conclusion.
 ```
 
-### L
+My hypothesis was incorrect, the mayonnaise performed worse than butter as far as browning is concerned.  The results were clearer than I expected.  All butter samples outperformed all mayonnaise samples.  In addition heavier application of butter helped improve browning but a heavy application of mayo hurt browning.
+
+### L: Improvements
 ```{r include=FALSE}
 # Describe at least one uncontrolled, confounding variable that could have influenced your observed results and any ways the experiment could be improved.
 ```
- 
-### M
+
+#### Photograph Reflections
+* This experiment did not account for reflections in the photographs.  A slight sheen can be seen in the upper right hand corner of a few of the heavy butter samples.  This makes the photo appear lighter than the sample actually is.  In this case however these samples ended up being the darkest anyways so these reflections do not change any conclusions, only the scale by which butter outperformed mayo.
+* For future experiments I recommend using multiple light sources placed around the edges of the box instead of near the camera.
+#### Bread Drying
+* Bread samples dried and curled in unexpected ways while prepping and photographing them.
+* I recommend refrigerating the bread before the experiment so it stays more consistent during prep and working as quickly as possible.
+#### Bread Cutting
+* The cutting jig was not a very efficient use of the bread.  I think a cookie cutter would be faster and allow the user to better select uniform sections of bread as well as nest more cuts into a single piece of bread.
+#### Crumbs and Smudges
+* My samples were photographed on a matte green piece of paper that absorbed oils easily and could not be wiped clean.  I had to be very careful when handling samples in order to avoid messing up the background and it was difficult to remove crumbs from view.
+* For future experiments I recommend using a surface that can be exposed to an oil and wiped clean with a paper towel.
+
+### M: Results vs Literature
 ```{r include=FALSE}
 # Discuss how your experimental results relate to the references presented in the literature review.
 ```
 
+My results did not line up with the literature.  These references relied solely on anecdotal data and did not list any variable controls when making their claims.  This experiment was also done with a specific ingredients that fit my personal diet.  Testing a wider variety of ingredients may result in different results.  In addition, this experiment compared oils that were cooked for identical times which is not how food is typically cooked.
+
 ## Section VI: Sources
-### N
+### N: Sources
 ```{r include=FALSE}
 # Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
 ```
 
+* https://www.southernliving.com/food/dish/sandwich/grilled-cheese-with-mayo-or-butter
+* https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-make-grilled-cheese-with-mayonnaise
+
 ## Appendix
 
-### OCR Calibration
+### Raw Samples
+
+```{r raw_samples, echo=FALSE}
+raw %>%
+  select(
+    Oil,
+    Sample,
+    Histogram,
+    Pixels,
+    Min,
+    Max,
+    Standard_Deviation,
+    Average
+  ) %>%
+  arrange(Average) %>%
+  pander(split.table = Inf)
+```
+
+### OCR Corrections
 
 All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
 row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
-
-Common issues:
-
-* Number oriented incorrectly
-* Reflection detected as a 1
-* Number on front of die detected
 
 ```{r ocr_calibration, echo=FALSE}
 samples %>%
