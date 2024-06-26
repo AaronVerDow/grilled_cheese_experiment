@@ -29,13 +29,15 @@ Several sources claim that using mayonnaise instead of butter on the outside of 
 
 According to Southern Living:
 
-> The secret to your best-ever grilled cheese? Mayonnaise. Next time you make one, don't smother your bread in butter like usual. Instead, slather on the mayo; it'll add a tang and create a perfectly crisp exterior. 
+> The secret to your best-ever grilled cheese? Mayonnaise. Next time you make one, don't smother your bread in butter like usual. Instead, slather on the mayo; it'll add a tang and create a perfectly crisp exterior. (Beal, 2024)
 
 The Food Network:
 
->  If you butter only the inside of your bread and spread a thin schmear of mayo on the exterior of the sandwich, you create the ideal conditions for the bread to toast, cheese to melt and butter to shine. The mayonnaise doesn’t actually provide flavor — if you’re a mayo hater, you won’t even taste it, I promise — but instead encourages ideal browning and melting.
+>  If you butter only the inside of your bread and spread a thin schmear of mayo on the exterior of the sandwich, you create the ideal conditions for the bread to toast, cheese to melt and butter to shine. The mayonnaise doesn’t actually provide flavor — if you’re a mayo hater, you won’t even taste it, I promise — but instead encourages ideal browning and melting. (Saladino, 2023)
 
-I made grilled cheese sandwiches this way for many years.  Recently I had to start avoiding gluten and since then have struggled to make a grilled cheese with my preferred level of darkness before the cheese starts to break down from the heat.  This experiment will be testing the browning performance of mayo over butter with the specific bread and oils I eat.
+I made grilled cheese sandwiches this way for many years.  Recently I had to start avoiding gluten and since then have struggled to make a grilled cheese with my preferred level of darkness before the cheese starts to break down from the heat.  
+
+The specific reaction that browns food is known as the Maillard reaction.  "Using mayonnaise also helps create that Maillard reaction" (Makuch, 2024, as cited in Saladino, 2024). This experiment will be testing the browning performance of mayo over butter with the specific bread and oils I eat.
 
 ## Section II: Hypothesis
 
@@ -70,43 +72,6 @@ Proponents of the use of mayonnaise on grilled cheese claim it results in better
     * This will be controlled by putting oils into a syringe and applying specific quantities to each sample.
     * Light = 0.5 mL
     * Heavy = 1 mL
-
-#### Grid
-```{r grid}
-oils <- character(0)
-oils_short <- character(0)
-
-# explicitly assigning numbers so the assignments never change
-oils[1] <- "Light Butter"
-oils_short[1] <- "LB"
-
-oils[2] <- "Light Mayo"
-oils_short[2] <- "LM"
-
-oils[3] <- "None"
-oils_short[3] <- "X"
-
-oils[4] <- "Heavy Butter"
-oils_short[4] <- "HB"
-
-oils[5] <- "Heavy Mayo"
-oils_short[5] <- "HM"
-
-pander(matrix(oils_short, ncol = 6, nrow = 5, byrow = TRUE),  split.table = Inf)
-
-grid <- data.frame(
-  x = rep(1:6, times = 5),
-  y = rep(1:5, each = 6),
-  oil_num = rep(1:5)
-)
-
-grid <- mutate(grid,
-  oil = oils[oil_num],
-  id = x * 100 + y * 10 + oil_num
-)
-
-pander(grid)
-```
 
 
 ### E: Dependent Variables
@@ -145,7 +110,7 @@ Getting a quantitative measurement of bread darkness will be done by:
 * Photography
     * Automated camera settings
     * Ambient light
-
+    
 #### Bread
 
 Bread samples are cut into uniform 35x35mm squares using a bread cutting jig.  This has several benefits:
@@ -168,9 +133,7 @@ Mayo will be taken from a single jar and butter from a single stick.  Both oils 
 
 #### Photography
 
-The camera used is a GoPro Hero 9 with all automated settings turned off.  Light is supplied by a LumeCube LC-Panel 1.  Both are affixed to a box X above the sample.  The box is closed so no external light impacts the photo.
-
-Samples are placed on a pre-marked square in the box so they are in a consistent position.  The surface is a green background that is removed via software before analysis.
+Samples will be photographed in a closed box with no external light sources.  The camera will be manually set and all automated functions will be disabled.
 
 ### G: Materials and Tools
 ```{r include=FALSE}
@@ -200,7 +163,7 @@ LumeCube LC-Panel1
 * Brightness: 100%
 * Temperature: 5600K
 
-The camera is placed X above the sample with the light placed horizontally against the camera.
+The camera is placed 240mm above the sample with the light placed horizontally against the camera.
 
 Sample is enclosed so no external light sources impact the photo.
 
@@ -212,17 +175,19 @@ Placement for the samples is marked using a green Post It note.  This is easily 
 
 Bread is prepped using this jig to cut it into uniform 35mm squares.
 
-Bread is X
+Bread is liveGfree Gluten Free Bread Whole Grain
 
 #### Cutting Jig
 
+The cutting jig is simple wood construciton.  The important dimensions are the three right angles highlighted by the drawn on boxes and the 35mm gap that will make the sample square.  The remaining dimensions are irrelevant as long as the knife and bread can be aligned.
+
+![](pictures/doc/jig.jpg)
 
 #### Oils
 
-Used syringe (origins unknown, found at scientific surplus.) 
-
-* Mayonnaise used is X
-* Butter used is X
+* Oils are drawn into an AHS AH30S 30mL Syringe
+* Mayonnaise used is Hellmann's Plant Based Mayo (squeeze bottle)
+* Butter used is Land O Lakes Salted Butter
 * Heavy application is 0.5 mL
 * Light application is 1 mL
 
@@ -234,7 +199,7 @@ Each sample is attached with wood glue to the center of a 40x40mm square within 
 
 #### Cooking
 
-The griddle used is X
+The griddle used is Breville Sear and Press Grill
 
 #### Software setup
 
@@ -244,47 +209,6 @@ This instance was rendered on commit ID:
 ```{r git_id, echo=FALSE}
 system("git rev-parse HEAD", intern = TRUE)
 ```
-
-```{r constants, echo=FALSE, results='hide', messages=FALSE}
-# Where to pull images from (relative to this document)
-IMAGES_DIRECTORY = "pictures/one"
-
-CACHE_IMAGES <- TRUE
-CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
-
-# open picture in GIMP, select area, use position and size values
-# (take screenshot of this)
-SAMPLE_CROP <- c(
-  662,
-  746,
-  1564,
-  1822
-)
-SAMPLE_GEOMETRY <- "662x746+1564+1822"
-ID_CROP <- c(
-  243, # X
-  1674, # Y
-  3372, # X offset
-  1413  # Y offset
-)
-ID_GEOMETRY <- "243x1674+3372+1413"
-
-# adjust light cutoff for rendering numbers as black and white
-ID_THRESHOLD <- "85%"
-
-# scaling to shrink photograph of ID
-# target value for tesseract is 32 px high letters
-ID_SCALE <- "250"
-
-# options for fake rendering of dice for OCR comparison
-DIE_SIZE <- 36 # rough size of dice in pixels
-DIE_FONT_SIZE <- 30
-DIE_FONT <- "Ubuntu"
-
-OCR_CACHE_PATH <- "ocr.yaml"
-OCR_CACHE <- yaml.load_file(OCR_CACHE_PATH)
-```
-
 Functions for measuring samples: (other functions are hidden in the rendered version of this document
 
 ```{r functions, echo=FALSE, results='hide', message=FALSE}
@@ -480,30 +404,6 @@ process_file <- function(file) {
 }
 ``` 
 
-```{r build_data_frame}
-files <- list.files(IMAGES_DIRECTORY, full.names = TRUE)
-samples <- map_dfr(files, process_file)
-
-grilled <- samples %>%
-  filter(Grilled == TRUE)
-
-raw <- samples %>%
-  filter(Grilled == FALSE)
-
-```
-
-```{r write_ocr_cache, echo=FALSE}
-ocr_cache <- samples %>%
-  select(Filename, OCR) %>%
-  arrange(OCR)
-df2yaml(
-  ocr_cache,
-  key_col = "Filename",
-  val_col = "OCR",
-  out_yaml = OCR_CACHE_PATH
-)
-```
-
 ### H: Procedure
 ```{r include=FALSE}
 # Describe your experimental procedure in enough detail that a reader would be able to replicate the experiment.
@@ -519,11 +419,11 @@ Each digit represents a specific piece of data:
 1. Grid X, 1-6
 1. Grid Y, 1-5
 1. Oil
-    * 1 Light Butter
-    * 2 Heavy Butter
-    * 3 Light Mayo
-    * 4 Heavy Mayo
-    * 9 None
+    1. Light Butter
+    1. Light Mayo
+    1. None
+    1. Heavy Butter
+    1. Heavy Mayo
 1. State
     * 9 Uncooked
     * 1 Grilled
@@ -533,9 +433,55 @@ Each digit represents a specific piece of data:
 1. Unassigned
     * 9 No meaning
 1. Unassigned
-    * 9 No meaning
+   * 9 No meaning
+
+```{r oil_def, echo=FALSE}
+oils <- c(
+  "Light Butter",
+  "Light Mayo",
+  "None",
+  "Heavy Butter",
+  "Heavy Mayo"
+)
+
+oils_short <- c("LB", "LM", "X", "HB", "HM")
+
+# oil_list <- matrix(oils)
+# rownames(oil_list) <- paste("", 1:5)
+# pander(oil_list)
+```
 
 Digits 1-3 are set per sample and digits 4-7 are set per batch.
+
+#### Grid
+
+View of oils in grid form followed by a detailed list of each sample.  Reference these when placing any sample on the grid and taking photos.
+
+```{r grid, echo=FALSE}
+# Create a matrix
+oil_matrix <- matrix(oils_short, ncol = 6, nrow = 5, byrow = TRUE)
+
+# Add row and column names
+colnames(oil_matrix) <- 1:6
+rownames(oil_matrix) <- paste("", 1:5)
+
+# Display the table with pander
+pander(oil_matrix, split.table = Inf)
+
+grid <- data.frame(
+  X = rep(1:6, times = 5),
+  Y = rep(1:5, each = 6),
+  Oil = rep(1:5)
+)
+
+grid <- mutate(grid,
+  OilName = oils[Oil],
+  ID = X * 100 + Y * 10 + Oil
+)
+
+pander(grid)
+```
+
 
 #### Photograph Procedure
 This will be repeated every time a photograph is taken.
@@ -559,6 +505,9 @@ This will be repeated every time a photograph is taken.
   * Apply 1 mL of wood glue to back of sample
   * Place sample on paper grid
   * Repeat until grid is filled
+  
+![](pictures/doc/samples1.png)
+
 * Allow glue to dry
   * Wrap grid in aluminum foil to reduce drying of bread samples
   * Place a uniform weight on the grid to flatten out the bread samples and ensure proper adhesion
@@ -572,6 +521,9 @@ This will be repeated every time a photograph is taken.
   * Using only one side of a butter knife scoop a quarter of the dollop and spread to each edge
   * Wipe any remaining oil on the knife onto any exposed edges
   * Clean knife between samples to avoid buildup
+  
+![](pictures/doc/samples2.png)
+
 * Place grid in center of hot griddle.
 * Place weight on top of sample grid.
 * Let cook for 4:30 minutes.
@@ -581,13 +533,52 @@ This will be repeated every time a photograph is taken.
   * The bread should separate in the middle between the glued back and grilled front.
 
 #### Data Review
+
 * `git clone https://github.com/AaronVerDow/grilled_cheese_experiment/`
 * Copy photos of samples to a directory under `src/pictures`
 * Update IMAGES_DIRECTORY in constants to point to new directory
-* Knit this document
-* Adjust sample and ID geometry if photos are improperly cropped
-* Look over "OCR Corrections" in the Appendix and confirm all photos have been correctly identified
-```{r}
+```{r const_images_dir}
+IMAGES_DIRECTORY = "pictures/one"
+```
+
+* Adjust sample and ID geometry if photos are improperly cropped.  All units are in pixels.
+
+```{r const_crop}
+# This must be set to FALSE to see any changes made here
+CACHE_IMAGES <- TRUE
+
+# Highlighted in red
+SAMPLE_CROP <- c(
+  # size of rectangle
+  662,   # X
+  746,   # Y
+
+  # location of rectangle
+  1564,  # X offset
+  1822   # Y offset
+)
+
+# Highlighted in blue
+ID_CROP <- c(
+  # size of rectangle
+  243,   # X
+  1674,  # Y
+
+  # location of rectangle
+  3372,  # X offset
+  1413   # Y offset
+)
+```
+
+```{r crop_preview, echo=FALSE}
+files <- list.files(IMAGES_DIRECTORY, full.names = TRUE)
+
+image_crop_geometry <- function(crop_vector) {
+  paste0(crop_vector[1], "x", crop_vector[2], "+", crop_vector[3], "+", crop_vector[4])
+}
+
+SAMPLE_GEOMETRY <- image_crop_geometry(SAMPLE_CROP)
+ID_GEOMETRY <- image_crop_geometry(ID_CROP)
 
 outline <- function(geometry, border="red") { 
   rect(
@@ -607,13 +598,62 @@ if (!file.exists(calibration_path) || !CACHE_IMAGES) {
   outline(SAMPLE_CROP)
   outline(ID_CROP, "blue")
   dev.off()
-  image_write(calibration, path = calibration_path, format = "png")
+  calibration %>%
+    # image_scale("1024") %>% # not working for some reason
+    image_write(path = calibration_path, format = "png")
 }
-image_read(calibration_path)
+# moving this to markdown for speed
+# image_read(calibration_path)
+```
 
+![](tmp/calibration.png)
+
+* Look over "OCR Corrections" in the Appendix and confirm all photos have been correctly identified. Adjust constants as needed:
+
+```{r}
+# adjust light cutoff for rendering numbers as black and white
+ID_THRESHOLD <- "85%"
+
+# scaling to shrink photograph of ID
+# target value for tesseract is 32 px high letters
+ID_SCALE <- "250"
+
+# options for fake rendering of dice for OCR comparison
+DIE_SIZE <- 36 # rough size of dice in pixels
+DIE_FONT_SIZE <- 30
+DIE_FONT <- "Ubuntu"
+```
+
+```{r constants, echo=FALSE, results='hide', messages=FALSE}
+CACHE_HISTOGRAMS <- TRUE && CACHE_IMAGES
+
+OCR_CACHE_PATH <- "ocr.yaml"
+OCR_CACHE <- yaml.load_file(OCR_CACHE_PATH)
+```
+
+```{r build_data_frame, echo=FALSE}
+samples <- map_dfr(files, process_file)
+
+grilled <- samples %>%
+  filter(Grilled == TRUE)
+
+raw <- samples %>%
+  filter(Grilled == FALSE)
+
+ocr_cache <- samples %>%
+  select(Filename, OCR) %>%
+  arrange(OCR)
+df2yaml(
+  ocr_cache,
+  key_col = "Filename",
+  val_col = "OCR",
+  out_yaml = OCR_CACHE_PATH
+)
 ```
 
 ## Section IV: Result
+
+![](pictures/doc/samples3.png)
 
 ### I: Data Summary
 ```{r include=FALSE}
@@ -644,7 +684,7 @@ grilled %>%
 # Create a visual representation (i.e., data table, graph, chart) for the data you gathered from each experimental manipulation. Be sure that you choose a method of visual representation that effectively communicates the main findings of your experiment (e.g., exact measurements, trends over time, differences across categories, proportions). Make sure your visual representation clearly represents data for each quantified variable, and be sure to label and align your data accurately. Remember also to choose a scale that fits the range of the data and represent your data points precisely and accurately.
 ```
 
-Box plot of the average lightness values grouped by oil:
+Box plot of the average lightness values grouped by oil.  0 is black, 255 is white.
 
 ```{r results, echo=FALSE}
 # This also works
@@ -699,16 +739,22 @@ My hypothesis was incorrect, the mayonnaise performed worse than butter as far a
 ```
 
 #### Photograph Reflections
-* This experiment did not account for reflections in the photographs.  A slight sheen can be seen in the upper right hand corner of a few of the heavy butter samples.  This makes the photo appear lighter than the sample actually is.  In this case however these samples ended up being the darkest anyways so these reflections do not change any conclusions, only the scale by which butter outperformed mayo.
-* For future experiments I recommend using multiple light sources placed around the edges of the box instead of near the camera.
+This experiment did not account for reflections in the photographs.  A slight sheen can be seen in the upper right hand corner of a few of the heavy butter samples.  This makes the photo appear lighter than the sample actually is.  In this case however these samples ended up being the darkest anyways so these reflections do not change any conclusions, only the scale by which butter outperformed mayo.
+
+For future experiments I recommend using multiple light sources placed around the edges of the box instead of near the camera.
+
 #### Bread Drying
-* Bread samples dried and curled in unexpected ways while prepping and photographing them.
-* I recommend refrigerating the bread before the experiment so it stays more consistent during prep and working as quickly as possible.
+Bread samples dried and curled in unexpected ways while prepping and photographing them.
+
+I recommend refrigerating the bread before the experiment so it stays more consistent during prep and working as quickly as possible.
+
 #### Bread Cutting
-* The cutting jig was not a very efficient use of the bread.  I think a cookie cutter would be faster and allow the user to better select uniform sections of bread as well as nest more cuts into a single piece of bread.
+The cutting jig was not a very efficient use of the bread.  I think a cookie cutter would be faster and allow the user to better select uniform sections of bread as well as nest more cuts into a single piece of bread.
+
 #### Crumbs and Smudges
-* My samples were photographed on a matte green piece of paper that absorbed oils easily and could not be wiped clean.  I had to be very careful when handling samples in order to avoid messing up the background and it was difficult to remove crumbs from view.
-* For future experiments I recommend using a surface that can be exposed to an oil and wiped clean with a paper towel.
+My samples were photographed on a matte green piece of paper that absorbed oils easily and could not be wiped clean.  I had to be very careful when handling samples in order to avoid messing up the background and it was difficult to remove crumbs from view.
+
+For future experiments I recommend using a surface that can be exposed to an oil and wiped clean with a paper towel.
 
 ### M: Results vs Literature
 ```{r include=FALSE}
@@ -723,8 +769,13 @@ My results did not line up with the literature.  These references relied solely 
 # Acknowledge sources, using in-text citations and references, for content that is quoted, paraphrased, or summarized.
 ```
 
-* https://www.southernliving.com/food/dish/sandwich/grilled-cheese-with-mayo-or-butter
-* https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-make-grilled-cheese-with-mayonnaise
+Beall C. (2024) *You Should Be Making Your Grilled Cheese With Mayonnaise—Here's Why*<br>
+&emsp;Southern Living.<br>
+&emsp;*Retrieved from https://www.southernliving.com/food/dish/sandwich/grilled-cheese-with-mayo-or-butter*
+  
+Saladino E. (2023). *The Secret Ingredient to Perfect Grilled Cheese*<br>
+&emsp;The Food Network.<br>
+&emsp;*Retrieved from https://www.foodnetwork.com/how-to/packages/food-network-essentials/how-to-make-grilled-cheese-with-mayonnaise*
 
 ## Appendix
 
@@ -748,8 +799,7 @@ raw %>%
 
 ### OCR Corrections
 
-All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top 
-row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
+All data is processed using numbers derived from Optical Character Recognition (OCR).  Use this section to ensure the all numbers have been identified correctly.  The top row is the picture of the dice (heavily filtered for better processing) and the shaded gray text is the detected number.  If there are any mistakes edit `ocr.yaml` to make corrections and re-knit this document.
 
 ```{r ocr_calibration, echo=FALSE}
 samples %>%
@@ -757,5 +807,3 @@ samples %>%
   select(Filename, ocr_comparison) %>%
   pander()
 ```
-
-
