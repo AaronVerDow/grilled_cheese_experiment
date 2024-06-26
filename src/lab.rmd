@@ -1,9 +1,11 @@
 ---
-title: Grilled Cheese Experiment
+title: Browning Bread using Mayo vs Butter
 output:
   html_document: default
   pdf_document: default
 ---
+### Aaron VerDow
+### Natural Science Lab - C683
 ## Section I: Introduction and Literature Review
 
 ```{r imports, echo=FALSE, results='hide', message=FALSE}
@@ -551,11 +553,11 @@ CACHE_IMAGES <- TRUE
 SAMPLE_CROP <- c(
   # size of rectangle
   662,   # X
-  746,   # Y
+  662,   # Y
 
   # location of rectangle
   1564,  # X offset
-  1822   # Y offset
+  1906   # Y offset
 )
 
 # Highlighted in blue
@@ -795,6 +797,8 @@ raw %>%
   ) %>%
   arrange(Average) %>%
   pander(split.table = Inf)
+
+mean_oil_boxplot(raw)
 ```
 
 ### OCR Corrections
